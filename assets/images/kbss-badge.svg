@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230" width="200" height="230">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3d7c;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d2657;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="innerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#dce8f8;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#b8d0ef;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b00;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#e03000;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#9b1a00;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer shield -->
+  <path d="M100 8 L185 35 L185 120 Q185 185 100 218 Q15 185 15 120 L15 35 Z"
+        fill="url(#shieldGrad)" stroke="#c8a84b" stroke-width="3"/>
+
+  <!-- Inner shield face -->
+  <path d="M100 18 L175 42 L175 118 Q175 178 100 208 Q25 178 25 118 L25 42 Z"
+        fill="url(#innerGrad)" stroke="#1a3d7c" stroke-width="1.5"/>
+
+  <!-- Arc text path for school name -->
+  <path id="topArc" d="M 38 80 A 65 65 0 0 1 162 80" fill="none"/>
+  <text font-family="Georgia,serif" font-size="10.5" font-weight="700" fill="#1a3d7c" letter-spacing="0.5">
+    <textPath href="#topArc" startOffset="4%">KISSI BENDU SECONDARY SCHOOL</textPath>
+  </text>
+
+  <!-- K.B.S.S label -->
+  <text x="100" y="100" font-family="Georgia,serif" font-size="17" font-weight="700"
+        fill="#1a3d7c" text-anchor="middle" letter-spacing="2">K.B.S.S</text>
+
+  <!-- KOINDU label -->
+  <text x="100" y="116" font-family="Georgia,serif" font-size="11" font-weight="600"
+        fill="#1a3d7c" text-anchor="middle" letter-spacing="1.5">KOINDU</text>
+
+  <!-- Torch handle -->
+  <rect x="96" y="145" width="8" height="30" rx="3" fill="#1a3d7c"/>
+  <!-- Torch body -->
+  <rect x="93" y="128" width="14" height="20" rx="4" fill="#2c5282"/>
+  <!-- Flame -->
+  <path d="M100 96 Q112 108 108 122 Q104 130 100 128 Q96 130 92 122 Q88 108 100 96Z"
+        fill="url(#flameGrad)" filter="url(#glow)"/>
+  <path d="M100 104 Q107 112 105 120 Q103 125 100 124 Q97 125 95 120 Q93 112 100 104Z"
+        fill="#ffaa00" opacity="0.7"/>
+
+  <!-- Open book pages (left) -->
+  <path d="M62 158 Q80 152 100 155 L100 178 Q80 175 62 181 Z" fill="white" stroke="#1a3d7c" stroke-width="1.2"/>
+  <!-- Open book pages (right) -->
+  <path d="M138 158 Q120 152 100 155 L100 178 Q120 175 138 181 Z" fill="white" stroke="#1a3d7c" stroke-width="1.2"/>
+  <!-- Book spine -->
+  <line x1="100" y1="155" x2="100" y2="178" stroke="#1a3d7c" stroke-width="1.5"/>
+  <!-- Book lines left page -->
+  <line x1="70" y1="163" x2="96" y2="162" stroke="#aac0d8" stroke-width="1"/>
+  <line x1="68" y1="168" x2="96" y2="167" stroke="#aac0d8" stroke-width="1"/>
+  <line x1="68" y1="173" x2="96" y2="172" stroke="#aac0d8" stroke-width="1"/>
+  <!-- Book lines right page -->
+  <line x1="104" y1="162" x2="130" y2="163" stroke="#aac0d8" stroke-width="1"/>
+  <line x1="104" y1="167" x2="132" y2="168" stroke="#aac0d8" stroke-width="1"/>
+  <line x1="104" y1="172" x2="132" y2="173" stroke="#aac0d8" stroke-width="1"/>
+
+  <!-- Bottom ribbon -->
+  <path d="M40 195 Q45 188 55 192 L100 186 L145 192 Q155 188 160 195 Q155 202 145 198 L100 204 L55 198 Q45 202 40 195Z"
+        fill="#1a3d7c" stroke="#c8a84b" stroke-width="1"/>
+  <!-- Ribbon side folds left -->
+  <path d="M40 195 L32 200 L40 205 L47 198Z" fill="#0d2657"/>
+  <!-- Ribbon side folds right -->
+  <path d="M160 195 L168 200 L160 205 L153 198Z" fill="#0d2657"/>
+  <!-- Motto text -->
+  <text x="100" y="199" font-family="Arial,sans-serif" font-size="8" font-weight="700"
+        fill="white" text-anchor="middle" letter-spacing="0.8">PRODEO ET PROPATRIA</text>
+
+  <!-- Outer ring highlight -->
+  <path d="M100 8 L185 35 L185 120 Q185 185 100 218 Q15 185 15 120 L15 35 Z"
+        fill="none" stroke="#c8a84b" stroke-width="1" opacity="0.5"/>
+</svg>

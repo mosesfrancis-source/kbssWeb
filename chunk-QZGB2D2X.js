@@ -1,0 +1,1 @@
+function t(r){return r>=75?"A1":r>=70?"B2":r>=65?"B3":r>=60?"C4":r>=55?"C5":r>=50?"C6":r>=45?"D7":r>=40?"E8":"F9"}function u(r){let n=r.toUpperCase();return["A1","B2","B3"].includes(n)?"success":["C4","C5","C6"].includes(n)?"warning":"error"}export{t as a,u as b};
