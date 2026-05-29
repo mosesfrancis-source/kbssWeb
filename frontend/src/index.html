@@ -13,105 +13,139 @@
   <meta property="og:title" content="K.B.S.S Academic Portal">
   <meta property="og:description" content="Kissi Bendu Secondary School — Koindu Town, Sierra Leone">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kbss-5a255.web.app">
+  <meta property="og:url" content="https://mosesfrancis-source.github.io/kbssWeb/">
 
-  <!-- Preconnect for fonts -->
+  <!-- DNS warm-up only — fonts load non-blocking below -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
+  <!-- Fonts: non-blocking (media=print trick prevents render-blocking) -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+        media="print" onload="this.media='all'">
+
+  <!-- Material Icons: non-blocking -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round"
+        media="print" onload="this.media='all'">
 
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-
-  <!-- Theme color -->
-  <meta name="theme-color" content="#1565C0">
+  <meta name="theme-color" content="#0a4258">
 
   <style>
-    /* Critical loading screen CSS */
+    /* ── Critical splash screen — inlined so it shows before any JS ─── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a4258}
+
     #app-loading {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #0D47A1;
+      inset: 0;
+      background: linear-gradient(165deg, #0b2f3f 0%, #0a4258 55%, #0f5e7a 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.45s ease;
     }
-    #app-loading.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .loading-logo {
-      width: 96px;
-      height: 96px;
+    #app-loading.fade-out { opacity: 0; pointer-events: none; }
+
+    .loading-badge-ring {
+      width: 110px; height: 110px;
       border-radius: 50%;
       background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      animation: pulse 2s ease-in-out infinite;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.38);
+      animation: badgePulse 2.2s ease-in-out infinite;
+      padding: 6px;
     }
-    .loading-logo img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-    }
+    .loading-badge-ring svg { width: 92px; height: 92px; }
+
     .loading-school-name {
-      color: white;
+      color: #ffffff;
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 22px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
+      font-size: 21px; font-weight: 700;
+      text-align: center; margin-bottom: 5px; letter-spacing: 0.4px;
     }
-    .loading-subtitle {
-      color: rgba(255,255,255,0.7);
+    .loading-location {
+      color: rgba(220,240,255,0.72);
       font-family: 'DM Sans', Arial, sans-serif;
-      font-size: 13px;
-      text-align: center;
-      margin-bottom: 40px;
+      font-size: 12px; text-align: center; margin-bottom: 36px;
     }
     .loading-bar-track {
-      width: 200px;
-      height: 3px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 2px;
-      overflow: hidden;
+      width: 180px; height: 3px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px; overflow: hidden;
     }
     .loading-bar-fill {
-      height: 100%;
-      background: white;
+      height: 100%; background: rgba(255,255,255,0.85);
       border-radius: 2px;
-      animation: loading-progress 1.8s ease-in-out infinite;
+      animation: loadProgress 1.6s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-      50% { transform: scale(1.04); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+    @keyframes badgePulse {
+      0%,100%{ transform:scale(1);    box-shadow:0 8px 36px rgba(0,0,0,0.38); }
+      50%    { transform:scale(1.05); box-shadow:0 14px 44px rgba(0,0,0,0.48); }
     }
-    @keyframes loading-progress {
-      0% { width: 0; margin-left: 0; }
-      50% { width: 70%; margin-left: 30%; }
-      100% { width: 0; margin-left: 100%; }
+    @keyframes loadProgress {
+      0%  { width:0;   margin-left:0;    }
+      50% { width:65%; margin-left:35%;  }
+      100%{ width:0;   margin-left:100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading screen — hidden by Angular after bootstrap -->
+  <!-- Splash screen — dismissed once Angular renders into app-root -->
   <div id="app-loading">
-    <div class="loading-logo">
-      <img src="assets/images/kbss-badge.png" alt="K.B.S.S Badge" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:36px;font-weight:700;color:#1565C0;\'>K</span>'">
+
+    <!-- Badge as INLINE SVG — no network request, always visible -->
+    <div class="loading-badge-ring">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230">
+        <defs>
+          <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1a3d7c"/>
+            <stop offset="100%" style="stop-color:#0d2657"/>
+          </linearGradient>
+          <linearGradient id="ig" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#dce8f8"/>
+            <stop offset="100%" style="stop-color:#b8d0ef"/>
+          </linearGradient>
+          <linearGradient id="fg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff6b00"/>
+            <stop offset="60%" style="stop-color:#e03000"/>
+            <stop offset="100%" style="stop-color:#9b1a00"/>
+          </linearGradient>
+        </defs>
+        <path d="M100 8 L185 35 L185 120 Q185 185 100 218 Q15 185 15 120 L15 35 Z" fill="url(#sg)" stroke="#c8a84b" stroke-width="3"/>
+        <path d="M100 18 L175 42 L175 118 Q175 178 100 208 Q25 178 25 118 L25 42 Z" fill="url(#ig)" stroke="#1a3d7c" stroke-width="1.5"/>
+        <path id="arc" d="M 38 80 A 65 65 0 0 1 162 80" fill="none"/>
+        <text font-family="Georgia,serif" font-size="10.5" font-weight="700" fill="#1a3d7c" letter-spacing="0.5">
+          <textPath href="#arc" startOffset="4%">KISSI BENDU SECONDARY SCHOOL</textPath>
+        </text>
+        <text x="100" y="100" font-family="Georgia,serif" font-size="17" font-weight="700" fill="#1a3d7c" text-anchor="middle" letter-spacing="2">K.B.S.S</text>
+        <text x="100" y="116" font-family="Georgia,serif" font-size="11" font-weight="600" fill="#1a3d7c" text-anchor="middle" letter-spacing="1.5">KOINDU</text>
+        <rect x="96" y="145" width="8" height="30" rx="3" fill="#1a3d7c"/>
+        <rect x="93" y="128" width="14" height="20" rx="4" fill="#2c5282"/>
+        <path d="M100 96 Q112 108 108 122 Q104 130 100 128 Q96 130 92 122 Q88 108 100 96Z" fill="url(#fg)"/>
+        <path d="M100 104 Q107 112 105 120 Q103 125 100 124 Q97 125 95 120 Q93 112 100 104Z" fill="#ffaa00" opacity="0.7"/>
+        <path d="M62 158 Q80 152 100 155 L100 178 Q80 175 62 181 Z" fill="white" stroke="#1a3d7c" stroke-width="1.2"/>
+        <path d="M138 158 Q120 152 100 155 L100 178 Q120 175 138 181 Z" fill="white" stroke="#1a3d7c" stroke-width="1.2"/>
+        <line x1="100" y1="155" x2="100" y2="178" stroke="#1a3d7c" stroke-width="1.5"/>
+        <line x1="70" y1="163" x2="96" y2="162" stroke="#aac0d8" stroke-width="1"/>
+        <line x1="68" y1="168" x2="96" y2="167" stroke="#aac0d8" stroke-width="1"/>
+        <line x1="104" y1="162" x2="130" y2="163" stroke="#aac0d8" stroke-width="1"/>
+        <line x1="104" y1="167" x2="132" y2="168" stroke="#aac0d8" stroke-width="1"/>
+        <path d="M40 195 Q45 188 55 192 L100 186 L145 192 Q155 188 160 195 Q155 202 145 198 L100 204 L55 198 Q45 202 40 195Z" fill="#1a3d7c" stroke="#c8a84b" stroke-width="1"/>
+        <path d="M40 195 L32 200 L40 205 L47 198Z" fill="#0d2657"/>
+        <path d="M160 195 L168 200 L160 205 L153 198Z" fill="#0d2657"/>
+        <text x="100" y="199" font-family="Arial,sans-serif" font-size="7.5" font-weight="700" fill="white" text-anchor="middle" letter-spacing="0.8">PRODEO ET PROPATRIA</text>
+      </svg>
     </div>
+
     <div class="loading-school-name">Kissi Bendu Secondary School</div>
-    <div class="loading-subtitle">Koindu Town, Kailahun District, Sierra Leone</div>
+    <div class="loading-location">Koindu Town, Kailahun District, Sierra Leone</div>
     <div class="loading-bar-track">
       <div class="loading-bar-fill"></div>
     </div>
@@ -120,23 +154,41 @@
   <app-root></app-root>
 
   <script>
-    // Hide loading screen once Angular boots
-    document.addEventListener('DOMContentLoaded', () => {
-      const root = document.querySelector('app-root');
-      if (root) {
-        const observer = new MutationObserver(() => {
-          if (root.children.length > 0) {
-            const loader = document.getElementById('app-loading');
-            if (loader) {
-              loader.classList.add('fade-out');
-              setTimeout(() => loader.remove(), 500);
-            }
-            observer.disconnect();
-          }
-        });
-        observer.observe(root, { childList: true });
+    (function () {
+      var dismissed = false;
+      function dismissLoader() {
+        if (dismissed) return;
+        dismissed = true;
+        var loader = document.getElementById('app-loading');
+        if (loader) {
+          loader.classList.add('fade-out');
+          setTimeout(function () { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 500);
+        }
       }
-    });
+
+      // Primary: MutationObserver on app-root
+      var root = document.querySelector('app-root');
+      if (root) {
+        var obs = new MutationObserver(function () {
+          if (root.children.length > 0) { dismissLoader(); obs.disconnect(); }
+        });
+        obs.observe(root, { childList: true });
+      }
+
+      // Fallback 1: dismiss after 6 s in case Angular is very slow
+      setTimeout(dismissLoader, 6000);
+
+      // Fallback 2: dismiss on first user interaction
+      function onInteract() {
+        dismissLoader();
+        document.removeEventListener('click', onInteract, true);
+        document.removeEventListener('keydown', onInteract, true);
+        document.removeEventListener('touchstart', onInteract, true);
+      }
+      document.addEventListener('click', onInteract, true);
+      document.addEventListener('keydown', onInteract, true);
+      document.addEventListener('touchstart', onInteract, true);
+    })();
   </script>
 </body>
 </html>

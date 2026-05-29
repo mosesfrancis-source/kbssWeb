@@ -57,7 +57,7 @@ const ADMIN_ITEMS: SidebarItem[] = [
     <aside class="sidebar" [class.open]="open">
       <!-- Brand -->
       <div class="sidebar-brand">
-        <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="sidebar-badge"
+        <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="sidebar-badge"
              onerror="this.style.display='none'">
         <div class="sidebar-brand-text">
           <span class="sidebar-abbr">K.B.S.S</span>

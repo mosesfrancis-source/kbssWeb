@@ -32,7 +32,8 @@ service cloud.firestore {
     // ─── /users ─────────────────────────────────────────────────────────────────
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create: if isAdmin();
+      // A user may create their own document on registration (uid must match)
+      allow create: if isOwner(uid) || isAdmin();
       allow update: if isOwner(uid) || isAdmin();
       allow delete: if isAdmin();
     }

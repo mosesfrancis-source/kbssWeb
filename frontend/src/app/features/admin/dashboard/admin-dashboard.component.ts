@@ -20,7 +20,7 @@ import { combineLatest } from 'rxjs';
       <div class="admin-hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
-          <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="admin-badge"
+          <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="admin-badge"
                onerror="this.style.display='none'">
           <div class="hero-text">
             <h1>Admin Dashboard</h1>

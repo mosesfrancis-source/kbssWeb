@@ -44,7 +44,7 @@ function passwordMatchValidator(control: AbstractControl) {
       <div class="register-card">
         <div class="register-header">
           <img
-            src="assets/images/kbss-badge.png"
+            src="assets/images/kbss-badge.svg"
             alt="K.B.S.S"
             class="reg-badge"
             onerror="this.style.display='none'"
@@ -278,17 +278,23 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(this.parseError(err?.code ?? ''));
+        this.error.set(
+          err?.code ? this.parseError(err.code)
+            : err?.message ?? "Registration failed. Please try again."
+        );
       },
     });
   }
 
   private parseError(code: string): string {
     const messages: Record<string, string> = {
-      "auth/email-already-in-use": "This email is already registered.",
-      "auth/invalid-email": "Invalid email address.",
-      "auth/weak-password": "Password is too weak.",
+      "auth/email-already-in-use":    "This email is already registered.",
+      "auth/invalid-email":           "Invalid email address.",
+      "auth/weak-password":           "Password is too weak (min 8 chars, include numbers).",
+      "auth/network-request-failed":  "Network error — check your connection and try again.",
+      "auth/unauthorized-domain":     "This site is not authorised. Contact the admin.",
+      "auth/too-many-requests":       "Too many attempts. Please wait a moment and try again.",
     };
-    return messages[code] ?? "Registration failed. Please try again.";
+    return messages[code] ?? `Registration failed (${code || "unknown error"}).`;
   }
 }

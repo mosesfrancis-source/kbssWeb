@@ -13,7 +13,7 @@ import { CommonModule } from "@angular/common";
         <div class="brand-bg"></div>
         <div class="brand-content">
           <img
-            src="assets/images/kbss-badge.png"
+            src="assets/images/kbss-badge.svg"
             alt="K.B.S.S Badge"
             class="brand-badge"
             onerror="this.style.display='none'"

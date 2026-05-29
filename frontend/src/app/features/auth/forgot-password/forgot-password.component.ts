@@ -19,7 +19,7 @@ import { AuthService } from '../../../core/services/auth.service';
     <div class="forgot-page">
       <div class="forgot-card">
         <div class="forgot-header">
-          <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="forgot-badge"
+          <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="forgot-badge"
                onerror="this.style.display='none'">
           <h2>Reset Password</h2>
           <p>Enter your email address and we'll send you a link to reset your password.</p>

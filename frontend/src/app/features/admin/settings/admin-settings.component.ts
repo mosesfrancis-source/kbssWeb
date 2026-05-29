@@ -96,7 +96,7 @@ import { SchoolConfig } from '../../../shared/models';
 
           <div class="badge-preview card">
             <h4>School Badge</h4>
-            <img src="assets/images/kbss-badge.png" alt="K.B.S.S Badge" class="badge-preview-img"
+            <img src="assets/images/kbss-badge.svg" alt="K.B.S.S Badge" class="badge-preview-img"
                  onerror="this.style.display='none'">
             <p>Kissi Bendu Secondary School</p>
             <p class="motto-text"><em>"PRODEO ET PROPATRIA"</em></p>

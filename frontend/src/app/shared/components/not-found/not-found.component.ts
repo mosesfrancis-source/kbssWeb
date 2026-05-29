@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
   template: `
     <div class="not-found">
       <div class="not-found-content">
-        <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="nf-badge"
+        <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="nf-badge"
              onerror="this.style.display='none'">
         <h1 class="nf-code">404</h1>
         <h2>Page Not Found</h2>

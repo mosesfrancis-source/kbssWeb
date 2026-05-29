@@ -12,7 +12,7 @@ import {
   IdTokenResult,
 } from '@angular/fire/auth';
 import { from, Observable, BehaviorSubject, of, firstValueFrom } from 'rxjs';
-import { switchMap, map, tap } from 'rxjs/operators';
+import { switchMap, map, tap, catchError } from 'rxjs/operators';
 import { FirestoreService } from './firestore.service';
 
 export type UserRole = 'student' | 'teacher' | 'admin' | null;
@@ -47,7 +47,11 @@ export class AuthService {
   currentUser$ = this.userSubject.asObservable();
 
   constructor() {
+    // Safety net: if Firebase never responds, unblock the app after 8 s
+    const loadingTimeout = setTimeout(() => this.loading.set(false), 8000);
+
     onAuthStateChanged(this.auth, async (firebaseUser) => {
+      clearTimeout(loadingTimeout);
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult();
         let role = tokenResult.claims['role'] as UserRole | undefined;
@@ -114,7 +118,11 @@ export class AuthService {
               role,
               photoURL: '',
               isActive: true,
-            }, true)
+            }, true).pipe(
+              // Firestore write is best-effort — Auth account is already created.
+              // If rules block it (e.g. not yet deployed), don't fail registration.
+              catchError(() => of(void 0))
+            )
           )
         )
       ),

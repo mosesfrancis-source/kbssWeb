@@ -43,7 +43,7 @@ interface NavLink {
         <a routerLink="/home" class="brand">
           <div class="brand-badge-wrap">
             <img
-              src="assets/images/kbss-badge.png"
+              src="assets/images/kbss-badge.svg"
               alt="K.B.S.S"
               class="brand-badge"
               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"

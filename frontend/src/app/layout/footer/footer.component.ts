@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
       <div class="footer-main container">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="footer-badge"
+            <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="footer-badge"
                  onerror="this.style.display='none'">
             <div class="footer-school-info">
               <h3>Kissi Bendu Secondary School</h3>

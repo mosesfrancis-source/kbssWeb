@@ -23,7 +23,7 @@ import { ToastService } from '../../../core/services/toast.service';
       <div class="login-card">
         <!-- Badge header -->
         <div class="login-header">
-          <img src="assets/images/kbss-badge.png" alt="K.B.S.S" class="login-badge"
+          <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="login-badge"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
           <div class="login-badge-fb" style="display:none">K</div>
           <h2>Welcome Back</h2>
