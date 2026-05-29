@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,8 +8,9 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Student } from '../../../shared/models';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+import { switchMap, of } from 'rxjs';
+import { Student, Teacher, SchoolClass } from '../../../shared/models';
 import { serverTimestamp } from '@angular/fire/firestore';
 
 type AttendStatus = 'present' | 'absent' | 'late';
@@ -29,6 +30,18 @@ interface AttendRow { uid: string; studentId: string; fullName: string; status: 
 
       <!-- Toolbar -->
       <div class="attend-toolbar card">
+        <mat-form-field appearance="outline">
+          <mat-label>Class</mat-label>
+          <mat-select [(ngModel)]="selectedClassIdValue" (ngModelChange)="onClassChange($event)">
+            @for (c of myClasses(); track c.id) {
+              <mat-option [value]="c.classId">{{ c.name }}</mat-option>
+            }
+            @if (!myClasses().length) {
+              <mat-option value="">No classes assigned</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Date</mat-label>
           <input type="date" class="date-input" [(ngModel)]="selectedDate"
@@ -113,32 +126,62 @@ interface AttendRow { uid: string; studentId: string; fullName: string; status: 
   styleUrls: ['./teacher-attendance.component.scss'],
 })
 export class TeacherAttendanceComponent {
-  private auth = inject(AuthService);
-  private fs = inject(FirestoreService);
+  private auth  = inject(AuthService);
+  private fs    = inject(FirestoreService);
   private toast = inject(ToastService);
 
   selectedDate = new Date().toISOString().split('T')[0];
+  selectedClassIdValue = '';
   saving = signal(false);
   statuses: AttendStatus[] = ['present', 'absent', 'late'];
 
-  students = toSignal(
-    this.fs.collection$<Student>('students', this.fs.limit(60)),
+  // Load this teacher's Firestore document
+  private teacherDoc = toSignal(
+    toObservable(this.auth.currentUser).pipe(
+      switchMap(u => u ? this.fs.getDoc<Teacher>(`teachers/${u.uid}`) : of(null))
+    ), { initialValue: null }
+  );
+
+  allClasses  = toSignal(this.fs.collection$<SchoolClass>('classes'), { initialValue: [] });
+  myClasses   = computed(() => {
+    const ids = this.teacherDoc()?.classIds ?? [];
+    const all = this.allClasses();
+    return ids.length ? all.filter(c => ids.includes(c.classId)) : all;
+  });
+
+  private allStudents = toSignal(
+    this.fs.collection$<Student>('students', this.fs.limit(100)),
     { initialValue: [] }
   );
 
-  attendRows = () => this.students().map((s): AttendRow => ({
-    uid: s.uid,
-    studentId: s.studentId,
-    fullName: s.fullName,
-    status: 'present',
-  }));
+  private _rows = signal<AttendRow[]>([]);
+  attendRows = this._rows.asReadonly();
 
-  presentCount = () => this.attendRows().filter((r) => r.status === 'present').length;
-  absentCount  = () => this.attendRows().filter((r) => r.status === 'absent').length;
-  lateCount    = () => this.attendRows().filter((r) => r.status === 'late').length;
+  constructor() {
+    effect(() => {
+      const ids = this.teacherDoc()?.classIds ?? [];
+      if (ids.length && !this.selectedClassIdValue) {
+        this.selectedClassIdValue = ids[0];
+        this.refreshRows(ids[0]);
+      }
+    });
+  }
+
+  onClassChange(classId: string): void { this.refreshRows(classId); }
+
+  private refreshRows(classId: string): void {
+    const students = classId
+      ? this.allStudents().filter(s => s.classId === classId)
+      : this.allStudents();
+    this._rows.set(students.map(s => ({ uid: s.uid, studentId: s.studentId, fullName: s.fullName, status: 'present' })));
+  }
+
+  presentCount = () => this.attendRows().filter(r => r.status === 'present').length;
+  absentCount  = () => this.attendRows().filter(r => r.status === 'absent').length;
+  lateCount    = () => this.attendRows().filter(r => r.status === 'late').length;
 
   markAll(status: AttendStatus): void {
-    this.attendRows().forEach((r) => (r.status = status));
+    this._rows.update(rows => rows.map(r => ({ ...r, status })));
   }
 
   statusIcon(s: string): string {
@@ -147,22 +190,25 @@ export class TeacherAttendanceComponent {
     return 'cancel';
   }
 
+  toggleStatus(row: AttendRow): void {
+    const cycle: AttendStatus[] = ['present', 'late', 'absent'];
+    row.status = cycle[(cycle.indexOf(row.status) + 1) % 3];
+  }
+
   save(): void {
     const teacherId = this.auth.currentUser()?.uid ?? '';
+    const classId   = this.selectedClassIdValue || (this.teacherDoc()?.classIds?.[0] ?? '');
+    if (!classId) { this.toast.error('No class selected.'); return; }
     this.saving.set(true);
-    let saved = 0;
     const rows = this.attendRows();
+    let saved = 0;
 
-    rows.forEach((row) => {
+    rows.forEach(row => {
       this.fs.add('attendance', {
-        studentId: row.uid,
-        classId: 'class-1',
-        date: this.selectedDate,
-        status: row.status,
-        recordedBy: teacherId,
+        studentId: row.uid, classId,
+        date: this.selectedDate, status: row.status, recordedBy: teacherId,
       }).subscribe(() => {
-        saved++;
-        if (saved === rows.length) {
+        if (++saved === rows.length) {
           this.saving.set(false);
           this.toast.success(`Attendance saved for ${saved} students.`);
         }

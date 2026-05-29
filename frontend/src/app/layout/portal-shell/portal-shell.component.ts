@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, HostListener, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -10,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [RouterOutlet, CommonModule, SidebarComponent, PortalNavbarComponent],
   template: `
-    <div class="portal-shell" [class.sidebar-open]="sidebarOpen()">
+    <div class="portal-shell">
       <app-portal-navbar
         (menuToggle)="toggleSidebar()"
         [sidebarOpen]="sidebarOpen()"
@@ -18,19 +18,20 @@ import { AuthService } from '../../core/services/auth.service';
       <app-sidebar
         [open]="sidebarOpen()"
         [role]="auth.role()!"
-        (close)="sidebarOpen.set(false)"
+        (close)="closeSidebar()"
       />
-      <main class="portal-main" [class.shifted]="sidebarOpen()">
+
+      <!-- Overlay — closes sidebar on any tap/click, shown whenever sidebar is open -->
+      @if (sidebarOpen()) {
+        <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+      }
+
+      <main class="portal-main" [class.sidebar-open]="sidebarOpen()">
         <div class="route-wrapper">
           <router-outlet />
         </div>
       </main>
     </div>
-
-    <!-- Mobile overlay -->
-    @if (sidebarOpen()) {
-      <div class="sidebar-overlay" (click)="sidebarOpen.set(false)"></div>
-    }
   `,
   styles: [`
     .portal-shell {
@@ -40,12 +41,15 @@ import { AuthService } from '../../core/services/auth.service';
 
     .portal-main {
       padding-top: var(--navbar-height);
-      padding-left: var(--sidebar-width);
+      padding-left: 0;
       min-height: 100vh;
       transition: padding-left var(--transition-normal);
 
-      @media (max-width: 1024px) {
-        padding-left: 0;
+      /* Shift right only on desktop when sidebar is open */
+      @media (min-width: 1025px) {
+        &.sidebar-open {
+          padding-left: var(--sidebar-width);
+        }
       }
     }
 
@@ -58,22 +62,46 @@ import { AuthService } from '../../core/services/auth.service';
       }
     }
 
+    /* Overlay: full-screen semi-transparent backdrop */
     .sidebar-overlay {
-      display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.45);
       z-index: calc(var(--z-fixed) - 1);
+      cursor: pointer;
 
-      @media (max-width: 1024px) { display: block; }
+      /* On desktop, only show overlay if sidebar is open (it sits above content) */
+      @media (min-width: 1025px) {
+        background: rgba(0, 0, 0, 0.25);
+      }
     }
   `],
 })
-export class PortalShellComponent {
+export class PortalShellComponent implements OnInit {
   auth = inject(AuthService);
-  sidebarOpen = signal(true);
+
+  /* Start open only on desktop; closed on mobile so it doesn't cover the screen */
+  sidebarOpen = signal(false);
+
+  ngOnInit(): void {
+    this.sidebarOpen.set(window.innerWidth >= 1025);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    /* Auto-close when shrinking to mobile; auto-open when expanding to desktop */
+    if (window.innerWidth < 1025) {
+      this.sidebarOpen.set(false);
+    } else {
+      this.sidebarOpen.set(true);
+    }
+  }
 
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
   }
 }

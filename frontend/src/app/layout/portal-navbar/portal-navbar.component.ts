@@ -24,7 +24,7 @@ import { map } from 'rxjs/operators';
     MatFormFieldModule, MatInputModule, FormsModule,
   ],
   template: `
-    <header class="portal-navbar">
+    <header class="portal-navbar" [class.sidebar-open]="sidebarOpen">
       <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn" aria-label="Toggle sidebar">
         <mat-icon>{{ sidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
       </button>
@@ -79,7 +79,7 @@ import { map } from 'rxjs/operators';
             <div class="notif-empty">No notifications</div>
           }
           <div class="notif-footer">
-            <a [routerLink]="[auth.role() + '/notifications']" mat-button color="primary">
+            <a [routerLink]="notifPath()" mat-button color="primary">
               View all
             </a>
           </div>
@@ -102,7 +102,7 @@ import { map } from 'rxjs/operators';
             <div class="um-name">{{ auth.currentUser()?.displayName }}</div>
             <div class="um-role">{{ auth.role() }}</div>
           </div>
-          <a mat-menu-item [routerLink]="[auth.role() + '/profile']">
+          <a mat-menu-item [routerLink]="profilePath()">
             <mat-icon>person</mat-icon> My Profile
           </a>
           <a mat-menu-item routerLink="/home">
@@ -119,7 +119,7 @@ import { map } from 'rxjs/operators';
     .portal-navbar {
       position: fixed;
       top: 0;
-      left: var(--sidebar-width);
+      left: 0;
       right: 0;
       height: var(--navbar-height);
       background: var(--color-surface);
@@ -131,7 +131,9 @@ import { map } from 'rxjs/operators';
       z-index: calc(var(--z-fixed) - 1);
       transition: left var(--transition-normal);
 
-      @media (max-width: 1024px) { left: 0; }
+      @media (min-width: 1025px) {
+        &.sidebar-open { left: var(--sidebar-width); }
+      }
     }
 
     .menu-btn { color: var(--color-text-body); }
@@ -319,6 +321,14 @@ export class PortalNavbarComponent {
     this.notifService.getUnread().pipe(map((n) => n.length)),
     { initialValue: 0 }
   );
+
+  notifPath(): string {
+    return '/' + (this.auth.role() ?? 'student') + '/notifications';
+  }
+
+  profilePath(): string {
+    return '/' + (this.auth.role() ?? 'student') + '/profile';
+  }
 
   onSearch(): void {
     // Global search handled per-feature

@@ -8,15 +8,12 @@
   z-index: var(--z-fixed);
   display: flex;
   flex-direction: column;
+  /* Collapsible at ALL widths — controlled by .open class */
+  transform: translateX(-100%);
   transition: transform var(--transition-normal);
-  overflow: hidden;
 
-  @media (max-width: 1024px) {
-    transform: translateX(-100%);
-
-    &.open {
-      transform: translateX(0);
-    }
+  &.open {
+    transform: translateX(0);
   }
 }
 
@@ -72,13 +69,8 @@
   flex-direction: column;
   gap: 2px;
 
-  &::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
-  }
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
 }
 
 .sidebar-item {
@@ -93,6 +85,7 @@
   font-weight: 500;
   transition: all var(--transition-fast);
   white-space: nowrap;
+  position: relative;
 
   &:hover {
     background: rgba(255,255,255,0.08);
@@ -114,8 +107,6 @@
       border-radius: 0 2px 2px 0;
     }
   }
-
-  position: relative;
 }
 
 .sidebar-icon {
@@ -196,7 +187,5 @@
   color: rgba(255,255,255,0.5) !important;
   flex-shrink: 0;
 
-  &:hover {
-    color: var(--color-accent) !important;
-  }
+  &:hover { color: var(--color-accent) !important; }
 }

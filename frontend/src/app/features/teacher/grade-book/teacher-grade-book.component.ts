@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,10 +10,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { switchMap, of } from 'rxjs';
-import { Student, SchoolClass, Subject, scoreToGrade } from '../../../shared/models';
+import { Student, Teacher, SchoolClass, Subject, scoreToGrade } from '../../../shared/models';
 import { serverTimestamp } from '@angular/fire/firestore';
+
+interface GradeEntry { studentId: string; fullName: string; uid: string; score: number; grade: string; remarks: string; }
 
 @Component({
   selector: 'app-teacher-grade-book',
@@ -28,6 +30,18 @@ import { serverTimestamp } from '@angular/fire/firestore';
 
       <!-- Filters -->
       <div class="grade-filters card">
+        <mat-form-field appearance="outline">
+          <mat-label>Class</mat-label>
+          <mat-select [(ngModel)]="selectedClassIdValue" (ngModelChange)="onClassChange($event)">
+            @for (c of myClasses(); track c.id) {
+              <mat-option [value]="c.classId">{{ c.name }}</mat-option>
+            }
+            @if (!myClasses().length) {
+              <mat-option value="">No classes assigned</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Academic Year</mat-label>
           <mat-select [(ngModel)]="selectedYear">
@@ -122,74 +136,95 @@ import { serverTimestamp } from '@angular/fire/firestore';
 })
 export class TeacherGradeBookComponent {
   private auth = inject(AuthService);
-  private fs = inject(FirestoreService);
+  private fs   = inject(FirestoreService);
   private toast = inject(ToastService);
 
   selectedYear = '2024/2025';
   selectedTerm: 1 | 2 | 3 = 1;
   selectedSubject = '';
+  selectedClassIdValue = '';
   saving = signal(false);
 
-  subjects = toSignal(
-    this.fs.collection$<Subject>('subjects'),
+  subjects = toSignal(this.fs.collection$<Subject>('subjects'), { initialValue: [] });
+
+  // Load this teacher's Firestore document to get their real classIds
+  private teacherDoc = toSignal(
+    toObservable(this.auth.currentUser).pipe(
+      switchMap(u => u ? this.fs.getDoc<Teacher>(`teachers/${u.uid}`) : of(null))
+    ), { initialValue: null }
+  );
+
+  allClasses = toSignal(this.fs.collection$<SchoolClass>('classes'), { initialValue: [] });
+  myClasses  = computed(() => {
+    const ids = this.teacherDoc()?.classIds ?? [];
+    const all = this.allClasses();
+    return ids.length ? all.filter(c => ids.includes(c.classId)) : all;
+  });
+
+  allStudents = toSignal(
+    this.fs.collection$<Student>('students', this.fs.limit(100)),
     { initialValue: [] }
   );
 
-  students = toSignal(
-    this.fs.collection$<Student>('students', this.fs.limit(50)),
-    { initialValue: [] }
-  );
+  private _entries = signal<GradeEntry[]>([]);
+  gradeEntries = this._entries.asReadonly();
 
-  gradeEntries = () => this.students().map((s) => ({
-    studentId: s.studentId,
-    fullName: s.fullName,
-    uid: s.uid,
-    score: 0,
-    grade: 'F9',
-    remarks: '',
-  }));
-
-  updateGrade(entry: { score: number; grade: string }): void {
-    entry.grade = scoreToGrade(entry.score);
+  constructor() {
+    // Initialise class selector when teacher doc loads
+    effect(() => {
+      const ids = this.teacherDoc()?.classIds ?? [];
+      if (ids.length && !this.selectedClassIdValue) {
+        this.selectedClassIdValue = ids[0];
+        this.refreshEntries(ids[0]);
+      }
+    });
   }
 
+  onClassChange(classId: string): void {
+    this.refreshEntries(classId);
+  }
+
+  private refreshEntries(classId: string): void {
+    const students = classId
+      ? this.allStudents().filter(s => s.classId === classId)
+      : this.allStudents();
+    this._entries.set(students.map(s => ({
+      studentId: s.studentId, fullName: s.fullName, uid: s.uid,
+      score: 0, grade: 'F9', remarks: '',
+    })));
+  }
+
+  updateGrade(entry: GradeEntry): void { entry.grade = scoreToGrade(entry.score); }
+
   gradeClass(grade: string): string {
-    if (['A1', 'B2', 'B3'].includes(grade)) return 'badge-success';
-    if (['C4', 'C5', 'C6'].includes(grade)) return 'badge-warning';
+    if (['A1','B2','B3'].includes(grade)) return 'badge-success';
+    if (['C4','C5','C6'].includes(grade)) return 'badge-warning';
     return 'badge-error';
   }
 
   saveAll(): void {
-    const uid = this.auth.currentUser()?.uid;
-    if (!uid || !this.selectedSubject) return;
+    const uid     = this.auth.currentUser()?.uid;
+    const classId = this.selectedClassIdValue || (this.teacherDoc()?.classIds?.[0] ?? '');
+    if (!uid || !this.selectedSubject || !classId) {
+      this.toast.error('Please select a class and subject first.'); return;
+    }
     this.saving.set(true);
+    const entries = this.gradeEntries().filter(e => e.score > 0);
+    if (!entries.length) { this.saving.set(false); this.toast.warning('No scores entered yet.'); return; }
 
-    const entries = this.gradeEntries().filter((e) => e.score > 0);
     let saved = 0;
-
-    entries.forEach((entry) => {
+    entries.forEach(entry => {
       this.fs.add('results', {
-        studentId: entry.uid,
-        subjectId: this.selectedSubject,
-        teacherId: uid,
-        classId: 'class-1',
-        term: this.selectedTerm,
-        academicYear: this.selectedYear,
-        score: entry.score,
-        grade: entry.grade,
-        remarks: entry.remarks,
+        studentId: entry.uid, subjectId: this.selectedSubject,
+        teacherId: uid, classId,
+        term: this.selectedTerm, academicYear: this.selectedYear,
+        score: entry.score, grade: entry.grade, remarks: entry.remarks,
       }).subscribe(() => {
-        saved++;
-        if (saved === entries.length) {
+        if (++saved === entries.length) {
           this.saving.set(false);
           this.toast.success(`${saved} grades saved successfully!`);
         }
       });
     });
-
-    if (!entries.length) {
-      this.saving.set(false);
-      this.toast.warning('No scores entered yet.');
-    }
   }
 }
