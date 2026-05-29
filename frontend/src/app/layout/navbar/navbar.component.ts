@@ -1,0 +1,217 @@
+import {
+  Component,
+  inject,
+  signal,
+  HostListener,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { Subscription } from 'rxjs';
+
+interface NavLink {
+  label: string;
+  path: string;
+}
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatBadgeModule,
+    MatTooltipModule,
+  ],
+  template: `
+    <header class="navbar" [class.scrolled]="isScrolled()">
+      <div class="navbar-inner container">
+        <!-- Logo / Brand -->
+        <a routerLink="/home" class="brand">
+          <div class="brand-badge-wrap">
+            <img
+              src="assets/images/kbss-badge.png"
+              alt="K.B.S.S"
+              class="brand-badge"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <div class="brand-badge-fallback" style="display:none">K</div>
+          </div>
+          <div class="brand-text">
+            <span class="brand-abbr">K.B.S.S</span>
+            <span class="brand-full">Kissi Bendu Secondary School</span>
+          </div>
+        </a>
+
+        <!-- Desktop nav links -->
+        <nav class="nav-links" [class.open]="mobileOpen()">
+          @for (link of navLinks; track link.path) {
+            <a
+              [routerLink]="link.path"
+              routerLinkActive="active"
+              class="nav-link"
+              (click)="closeMobile()"
+            >
+              {{ link.label }}
+            </a>
+          }
+          <!-- Mobile: portal buttons -->
+          @if (auth.isLoggedIn()) {
+            <a [routerLink]="auth.getRedirectPath()" class="nav-link mobile-portal" (click)="closeMobile()">
+              My Portal
+            </a>
+          }
+        </nav>
+
+        <!-- Actions -->
+        <div class="nav-actions">
+          <!-- Theme toggle -->
+          <button
+            mat-icon-button
+            (click)="theme.toggle()"
+            [matTooltip]="theme.currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'"
+            aria-label="Toggle theme"
+            class="icon-btn"
+          >
+            <mat-icon>{{ theme.currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          </button>
+
+          @if (auth.isLoggedIn()) {
+            <!-- Notifications -->
+            <button
+              mat-icon-button
+              [routerLink]="[auth.getRedirectPath().split('/')[1] + '/notifications']"
+              [matBadge]="unreadCount() || null"
+              matBadgeColor="warn"
+              matBadgeSize="small"
+              class="icon-btn"
+              aria-label="Notifications"
+            >
+              <mat-icon>notifications_outlined</mat-icon>
+            </button>
+
+            <!-- User menu -->
+            <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+              @if (auth.currentUser()?.photoURL) {
+                <img [src]="auth.currentUser()!.photoURL" alt="Avatar" class="user-avatar" />
+              } @else {
+                <div class="user-avatar-fallback">
+                  {{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}
+                </div>
+              }
+              <span class="user-name">{{ getUserFirstName() }}</span>
+              <mat-icon>expand_more</mat-icon>
+            </button>
+
+            <mat-menu #userMenu="matMenu" class="user-dropdown">
+              <div class="user-menu-header">
+                <div class="um-name">{{ auth.currentUser()?.displayName }}</div>
+                <div class="um-role">{{ auth.role() | titlecase }}</div>
+              </div>
+              <a mat-menu-item [routerLink]="auth.getRedirectPath()">
+                <mat-icon>dashboard</mat-icon> My Dashboard
+              </a>
+              <a mat-menu-item [routerLink]="[auth.role() + '/profile']">
+                <mat-icon>person</mat-icon> My Profile
+              </a>
+              <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon> Sign Out
+              </button>
+            </mat-menu>
+          } @else {
+            <a routerLink="/auth/register" mat-raised-button class="register-btn">
+              Create Account
+            </a>
+            <a routerLink="/auth/login" mat-raised-button class="login-btn">
+              Sign In
+            </a>
+          }
+
+          <!-- Mobile hamburger -->
+          <button
+            mat-icon-button
+            class="hamburger"
+            (click)="toggleMobile()"
+            [attr.aria-expanded]="mobileOpen()"
+            aria-label="Toggle menu"
+          >
+            <mat-icon>{{ mobileOpen() ? 'close' : 'menu' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile overlay -->
+      @if (mobileOpen()) {
+        <div class="nav-overlay" (click)="closeMobile()"></div>
+      }
+    </header>
+  `,
+  styleUrls: ['./navbar.component.scss'],
+})
+export class NavbarComponent implements OnInit, OnDestroy {
+  auth = inject(AuthService);
+  theme = inject(ThemeService);
+  private notifService = inject(NotificationService);
+
+  isScrolled = signal(false);
+  mobileOpen = signal(false);
+  unreadCount = signal(0);
+
+  getUserFirstName(): string {
+    return this.auth.currentUser()?.displayName?.split(' ')[0] ?? 'User';
+  }
+
+  private sub?: Subscription;
+
+  navLinks: NavLink[] = [
+    { label: 'Home', path: '/home' },
+    { label: 'About', path: '/about' },
+    { label: 'Academics', path: '/academics' },
+    { label: 'Admissions', path: '/admissions' },
+    { label: 'Gallery', path: '/gallery' },
+    { label: 'News', path: '/news' },
+    { label: 'Contact', path: '/contact' },
+  ];
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.isScrolled.set(window.scrollY > 20);
+  }
+
+  ngOnInit(): void {
+    this.sub = this.notifService
+      .getUnread()
+      .subscribe((notifs) => this.unreadCount.set(notifs.length));
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  toggleMobile(): void {
+    this.mobileOpen.update((v) => !v);
+    document.body.classList.toggle('no-scroll', this.mobileOpen());
+  }
+
+  closeMobile(): void {
+    this.mobileOpen.set(false);
+    document.body.classList.remove('no-scroll');
+  }
+
+  logout(): void {
+    this.auth.logout().subscribe();
+  }
+}

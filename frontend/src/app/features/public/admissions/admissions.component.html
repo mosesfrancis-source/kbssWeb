@@ -1,0 +1,268 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a><span>›</span><span>Admissions</span>
+    </div>
+    <h1>Admissions 2025/2026</h1>
+    <p>Join the K.B.S.S family — applications are open for all year groups.</p>
+  </div>
+</section>
+
+<section class="admission-process">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag"><mat-icon>timeline</mat-icon>How to Apply</span>
+      <h2>Application Process</h2>
+    </div>
+    <div class="process-steps">
+      @for (step of [
+        { n: '01', title: 'Complete the Form', icon: 'edit_note', desc: 'Fill in the online application form with accurate personal and guardian details.' },
+        { n: '02', title: 'Upload Documents', icon: 'upload_file', desc: 'Upload birth certificate, previous school reports, and passport photograph.' },
+        { n: '03', title: 'Await Review', icon: 'pending_actions', desc: 'Our admissions team will review your application within 5 working days.' },
+        { n: '04', title: 'Receive Decision', icon: 'mark_email_read', desc: 'You will be contacted by email or phone with the outcome of your application.' }
+      ]; track step.n) {
+        <div class="process-step">
+          <div class="step-num">{{ step.n }}</div>
+          <div class="step-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
+          <h4>{{ step.title }}</h4>
+          <p>{{ step.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Application Form -->
+<section class="form-section">
+  <div class="container-sm">
+    @if (submitted()) {
+      <div class="success-card card">
+        <div class="success-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h2>Application Submitted!</h2>
+        <p>
+          Thank you for applying to Kissi Bendu Secondary School.
+          We have received your application and will review it within 5 working days.
+          Our admissions team will contact you at the provided email or phone number.
+        </p>
+        <p><strong>Reference: KBSS-{{ submissionRef }}</strong></p>
+        <a routerLink="/home" mat-raised-button color="primary">Back to Home</a>
+      </div>
+    } @else {
+      <div class="form-card card">
+        <div class="form-header">
+          <img src="assets/images/kbss-badge.png" alt="" class="form-badge"
+               onerror="this.style.display='none'">
+          <div>
+            <h2>Online Application Form</h2>
+            <p>Kissi Bendu Secondary School — Academic Year 2025/2026</p>
+          </div>
+        </div>
+
+        <mat-stepper orientation="vertical" #stepper linear>
+          <!-- Step 1: Personal Info -->
+          <mat-step [stepControl]="personalForm" label="Student Information">
+            <form [formGroup]="personalForm" class="step-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="fullName" placeholder="e.g. Amara Koroma">
+                <mat-icon matPrefix>person</mat-icon>
+                @if (personalForm.get('fullName')?.hasError('required')) {
+                  <mat-error>Full name is required</mat-error>
+                }
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Date of Birth</mat-label>
+                  <input matInput type="date" formControlName="dateOfBirth">
+                  <mat-icon matPrefix>cake</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option value="Male">Male</mat-option>
+                    <mat-option value="Female">Female</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Previous / Current School</mat-label>
+                <input matInput formControlName="formerSchool">
+                <mat-icon matPrefix>school</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Preferred Class / Year Group</mat-label>
+                <mat-select formControlName="preferredClass">
+                  @for (c of classes; track c) {
+                    <mat-option [value]="c">{{ c }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <div class="step-actions">
+                <button mat-raised-button color="primary" matStepperNext
+                        [disabled]="personalForm.invalid">
+                  Continue <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 2: Guardian Info -->
+          <mat-step [stepControl]="guardianForm" label="Guardian / Parent Details">
+            <form [formGroup]="guardianForm" class="step-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Guardian Full Name</mat-label>
+                <input matInput formControlName="guardianName">
+                <mat-icon matPrefix>person</mat-icon>
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="guardianPhone" type="tel">
+                  <mat-icon matPrefix>phone</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Email Address</mat-label>
+                  <input matInput formControlName="guardianEmail" type="email">
+                  <mat-icon matPrefix>email</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Home Address</mat-label>
+                <textarea matInput formControlName="address" rows="2"></textarea>
+                <mat-icon matPrefix>home</mat-icon>
+              </mat-form-field>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" matStepperNext
+                        [disabled]="guardianForm.invalid">
+                  Continue <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 3: Documents -->
+          <mat-step label="Upload Documents">
+            <div class="upload-area">
+              <div class="upload-zone">
+                <mat-icon>cloud_upload</mat-icon>
+                <p>Upload birth certificate, school report, and passport photo</p>
+                <input type="file" multiple accept="image/*,.pdf" (change)="onFileChange($event)" #fileInput style="display:none">
+                <button mat-stroked-button color="primary" (click)="fileInput.click()">
+                  Choose Files
+                </button>
+              </div>
+              @if (uploadedDocURLs().length > 0) {
+                <div class="uploaded-files">
+                  @for (url of uploadedDocURLs(); track url) {
+                    <div class="uploaded-item">
+                      <mat-icon>attach_file</mat-icon>
+                      <span>Document {{ $index + 1 }}</span>
+                      <mat-icon class="check">check_circle</mat-icon>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-raised-button color="primary" matStepperNext>
+                Continue <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 4: Review & Submit -->
+          <mat-step label="Review & Submit">
+            <div class="review-section">
+              <h3>Application Summary</h3>
+              <div class="review-grid">
+                <div class="review-item">
+                  <span class="review-label">Full Name</span>
+                  <span class="review-value">{{ personalForm.value.fullName }}</span>
+                </div>
+                <div class="review-item">
+                  <span class="review-label">Class Applied For</span>
+                  <span class="review-value">{{ personalForm.value.preferredClass }}</span>
+                </div>
+                <div class="review-item">
+                  <span class="review-label">Guardian</span>
+                  <span class="review-value">{{ guardianForm.value.guardianName }}</span>
+                </div>
+                <div class="review-item">
+                  <span class="review-label">Contact</span>
+                  <span class="review-value">{{ guardianForm.value.guardianPhone }}</span>
+                </div>
+                <div class="review-item">
+                  <span class="review-label">Documents</span>
+                  <span class="review-value">{{ uploadedDocURLs().length }} uploaded</span>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>Back</button>
+                <button
+                  mat-raised-button color="primary"
+                  (click)="submit()"
+                  [disabled]="submitting()"
+                >
+                  @if (submitting()) {
+                    <mat-icon class="spin">refresh</mat-icon> Submitting...
+                  } @else {
+                    <mat-icon>send</mat-icon> Submit Application
+                  }
+                </button>
+              </div>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Fee Structure -->
+<section class="fees-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag"><mat-icon>payments</mat-icon>Fees</span>
+      <h2>Fee Structure 2025/2026</h2>
+    </div>
+    <div class="fees-table-wrap">
+      <table class="fees-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Tuition Fees</th>
+            <th>Exam Fees</th>
+            <th>Other Levies</th>
+            <th>Total/Term</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of feeRows; track row.level) {
+            <tr>
+              <td>{{ row.level }}</td>
+              <td>{{ row.tuition }}</td>
+              <td>{{ row.exam }}</td>
+              <td>{{ row.other }}</td>
+              <td><strong>{{ row.total }}</strong></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="fees-note"><mat-icon>info</mat-icon> Fees are payable per term. Scholarship opportunities available for outstanding students. Contact the office for details.</p>
+  </div>
+</section>

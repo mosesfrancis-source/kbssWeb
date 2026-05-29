@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─── Helper functions ──────────────────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.role == 'admin';
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && request.auth.token.role == 'teacher';
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isPDF() {
+      return request.resource.contentType == 'application/pdf';
+    }
+
+    function isDocument() {
+      return request.resource.contentType.matches('application/.*')
+        || request.resource.contentType.matches('image/.*')
+        || request.resource.contentType == 'text/plain';
+    }
+
+    function isUnder10MB() {
+      return request.resource.size < 10 * 1024 * 1024;
+    }
+
+    function isUnder5MB() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    function isUnder50MB() {
+      return request.resource.size < 50 * 1024 * 1024;
+    }
+
+    // ─── User avatars ──────────────────────────────────────────────────────────
+    match /users/{uid}/avatar.jpg {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(uid) && isImage() && isUnder5MB();
+    }
+
+    match /users/{uid}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(uid) && isImage() && isUnder5MB();
+    }
+
+    // ─── Learning materials ────────────────────────────────────────────────────
+    match /materials/{classId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if (isTeacher() || isAdmin()) && isDocument() && isUnder50MB();
+      allow delete: if isTeacher() || isAdmin();
+    }
+
+    // ─── Gallery images ────────────────────────────────────────────────────────
+    match /gallery/{eventId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isUnder10MB();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Admission documents ───────────────────────────────────────────────────
+    match /admissions/{applicationId}/{fileName} {
+      allow read: if isAdmin();
+      allow write: if isDocument() && isUnder10MB();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Assignment submissions ────────────────────────────────────────────────
+    match /submissions/{assignmentId}/{studentId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(studentId) && isDocument() && isUnder50MB();
+      allow delete: if isOwner(studentId) || isAdmin();
+    }
+
+    // ─── Generated reports (PDFs) ─────────────────────────────────────────────
+    match /reports/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,281 @@
+<!-- ─── HERO ─────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-particles"></div>
+
+  <div class="container hero-content">
+    <div class="hero-badge">
+      <img src="assets/images/kbss-badge.png" alt="K.B.S.S Official Badge" class="hero-badge-img"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="hero-text">
+      <p class="hero-label">Welcome to</p>
+      <h1 class="hero-title">
+        Kissi Bendu<br>
+        <span class="hero-accent">Secondary School</span>
+      </h1>
+      <p class="hero-subtitle">
+        Koindu Town, Kailahun District, Sierra Leone<br>
+        <em>Shaping minds. Building futures. Transforming communities.</em>
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/admissions" mat-raised-button color="primary" class="btn-lg">
+          <mat-icon>person_add</mat-icon>
+          Apply Now
+        </a>
+        <a routerLink="/about" mat-stroked-button class="btn-lg btn-outline-white">
+          <mat-icon>info</mat-icon>
+          Learn More
+        </a>
+        <a routerLink="/auth/login" mat-button class="btn-portal">
+          <mat-icon>login</mat-icon>
+          Student Portal
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-hint">
+      <mat-icon>expand_more</mat-icon>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NEWS TICKER ──────────────────────────────────────────────────────────── -->
+@if (announcements().length > 0) {
+  <div class="news-ticker">
+    <div class="ticker-label">
+      <mat-icon>campaign</mat-icon>
+      Latest News
+    </div>
+    <div class="ticker-content">
+      <span class="ticker-item">
+        {{ announcements()[tickerIndex()]?.title }}
+      </span>
+    </div>
+    <a routerLink="/news" class="ticker-more">View all</a>
+  </div>
+}
+
+<!-- ─── STATS ─────────────────────────────────────────────────────────────────── -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      @for (counter of counters(); track counter.label) {
+        <div class="stat-counter card card-hover">
+          <div class="stat-icon-wrap primary">
+            <mat-icon>{{ counter.icon }}</mat-icon>
+          </div>
+          <div class="counter-value">
+            {{ counter.current }}{{ counter.suffix }}
+          </div>
+          <div class="counter-label">{{ counter.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRINCIPAL'S MESSAGE ──────────────────────────────────────────────────── -->
+<section class="principal-section">
+  <div class="container">
+    <div class="principal-card">
+      <div class="principal-photo-area">
+        <div class="principal-photo-frame">
+          <img src="assets/images/principal.jpg" alt="School Principal"
+               class="principal-photo"
+               onerror="this.src='assets/images/avatar-placeholder.png'">
+        </div>
+        <div class="principal-badge-seal">
+          <img src="assets/images/kbss-badge.png" alt="" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="principal-message">
+        <div class="section-tag">
+          <mat-icon>record_voice_over</mat-icon>
+          Message from the Principal
+        </div>
+        <h2>Welcome to K.B.S.S</h2>
+        <p class="lead">
+          At Kissi Bendu Secondary School, we believe that every student carries within them
+          the potential to achieve greatness. Our mission is to unlock that potential through
+          quality education, strong values, and a nurturing environment.
+        </p>
+        <p>
+          Established in the heart of Koindu Town, K.B.S.S has been a pillar of educational
+          excellence in Kailahun District for over four decades. We are committed to providing
+          our students with the knowledge, skills, and character needed to thrive in today's
+          ever-changing world.
+        </p>
+        <p>
+          I invite you to join our school community — whether as a student, parent, or partner.
+          Together, we will continue to build a brighter future for Sierra Leone.
+        </p>
+        <div class="principal-sig">
+          <div class="sig-name">The Principal</div>
+          <div class="sig-title">Kissi Bendu Secondary School</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY K.B.S.S ──────────────────────────────────────────────────────────── -->
+<section class="features-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">
+        <mat-icon>star</mat-icon>
+        Why Choose K.B.S.S
+      </span>
+      <h2>Excellence in Every Dimension</h2>
+      <p>We don't just teach — we inspire, guide, and equip every student for life's challenges.</p>
+    </div>
+    <div class="features-grid">
+      @for (feat of features; track feat.title) {
+        <div class="feature-card card card-hover">
+          <div class="feature-icon">
+            <mat-icon>{{ feat.icon }}</mat-icon>
+          </div>
+          <h3>{{ feat.title }}</h3>
+          <p>{{ feat.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ─── GALLERY PREVIEW ──────────────────────────────────────────────────────── -->
+<section class="gallery-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">
+        <mat-icon>photo_library</mat-icon>
+        School Life
+      </span>
+      <h2>Life at K.B.S.S</h2>
+      <p>A glimpse into our vibrant campus life, events, and achievements.</p>
+    </div>
+    <div class="gallery-grid">
+      @for (img of gallery(); track img.id) {
+        <div class="gallery-item" (click)="openLightbox(img)">
+          <img [src]="img.imageURL" [alt]="img.caption" loading="lazy">
+          <div class="gallery-overlay">
+            <mat-icon>zoom_in</mat-icon>
+            <span>{{ img.caption }}</span>
+          </div>
+        </div>
+      } @empty {
+        @for (n of [1,2,3,4,5,6]; track n) {
+          <div class="gallery-item gallery-placeholder">
+            <mat-icon>image</mat-icon>
+          </div>
+        }
+      }
+    </div>
+    <div class="gallery-cta">
+      <a routerLink="/gallery" mat-stroked-button color="primary">
+        <mat-icon>photo_library</mat-icon>
+        View Full Gallery
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ADMISSIONS CTA ───────────────────────────────────────────────────────── -->
+<section class="admissions-cta">
+  <div class="container admissions-inner">
+    <div class="admissions-text">
+      <h2>Admissions Now Open</h2>
+      <p>Applications for the 2025/2026 academic year are open. Secure your child's future today.</p>
+      <div class="countdown-timer">
+        <div class="count-block">
+          <span class="count-num">{{ countdown().days }}</span>
+          <span class="count-unit">Days</span>
+        </div>
+        <div class="count-sep">:</div>
+        <div class="count-block">
+          <span class="count-num">{{ countdown().hours }}</span>
+          <span class="count-unit">Hours</span>
+        </div>
+        <div class="count-sep">:</div>
+        <div class="count-block">
+          <span class="count-num">{{ countdown().minutes }}</span>
+          <span class="count-unit">Mins</span>
+        </div>
+        <div class="count-sep">:</div>
+        <div class="count-block">
+          <span class="count-num">{{ countdown().seconds }}</span>
+          <span class="count-unit">Secs</span>
+        </div>
+      </div>
+    </div>
+    <div class="admissions-action">
+      <img src="assets/images/kbss-badge.png" alt="" class="cta-badge"
+           onerror="this.style.display='none'">
+      <a routerLink="/admissions" mat-raised-button class="btn-cta btn-lg">
+        <mat-icon>person_add</mat-icon>
+        Apply Now
+      </a>
+      <a routerLink="/contact" mat-button class="btn-inquire">
+        Have questions? Contact us
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NEWS & EVENTS ────────────────────────────────────────────────────────── -->
+<section class="news-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">
+        <mat-icon>newspaper</mat-icon>
+        News & Events
+      </span>
+      <h2>Stay Informed</h2>
+    </div>
+    <div class="news-grid">
+      @for (a of announcements().slice(0, 3); track a.id) {
+        <div class="news-card card card-hover" [routerLink]="['/news']">
+          <div class="news-cat">Announcement</div>
+          <h3>{{ a.title }}</h3>
+          <p>{{ a.body | slice:0:120 }}...</p>
+          <div class="news-footer">
+            <span class="news-date">
+              <mat-icon>calendar_today</mat-icon>
+              <!-- date formatted -->
+            </span>
+            <span class="news-read-more">Read more <mat-icon>arrow_forward</mat-icon></span>
+          </div>
+        </div>
+      } @empty {
+        @for (n of [1,2,3]; track n) {
+          <div class="card skeleton-card">
+            <div class="skeleton" style="height: 16px; width: 60%; margin-bottom: 12px;"></div>
+            <div class="skeleton" style="height: 24px; margin-bottom: 8px;"></div>
+            <div class="skeleton" style="height: 16px; margin-bottom: 4px;"></div>
+            <div class="skeleton" style="height: 16px; width: 75%;"></div>
+          </div>
+        }
+      }
+    </div>
+    <div class="news-cta">
+      <a routerLink="/news" mat-stroked-button color="primary">
+        View All News & Events <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LIGHTBOX ──────────────────────────────────────────────────────────────── -->
+@if (lightboxImage()) {
+  <div class="lightbox" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <img [src]="lightboxImage()!.imageURL" [alt]="lightboxImage()!.caption">
+      <p>{{ lightboxImage()!.caption }}</p>
+    </div>
+  </div>
+}

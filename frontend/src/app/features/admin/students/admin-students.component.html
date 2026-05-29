@@ -1,0 +1,143 @@
+<div class="route-wrapper">
+  <div class="portal-page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <h1>Students Management</h1>
+      <p>{{ allStudents().length }} students enrolled</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>person_add</mat-icon> Add Student
+    </button>
+  </div>
+
+  <!-- Form panel -->
+  @if (showForm()) {
+    <div class="form-panel card">
+      <div class="form-panel-header">
+        <h3>{{ editingId() ? 'Edit Student' : 'Add New Student' }}</h3>
+        <button mat-icon-button (click)="showForm.set(false)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="save()" class="student-form">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Student ID</mat-label>
+            <input matInput formControlName="studentId">
+            <mat-icon matPrefix>badge</mat-icon>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="fullName">
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Date of Birth</mat-label>
+            <input matInput type="date" formControlName="dateOfBirth">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+              <mat-option value="Male">Male</mat-option>
+              <mat-option value="Female">Female</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Class</mat-label>
+            <mat-select formControlName="classId">
+              @for (c of classes(); track c.id) {
+                <mat-option [value]="c.classId">{{ c.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Enrollment Year</mat-label>
+            <input matInput type="number" formControlName="enrollmentYear">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Guardian Name</mat-label>
+            <input matInput formControlName="guardianName">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Guardian Phone</mat-label>
+            <input matInput formControlName="guardianPhone">
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Home Address</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-button type="button" (click)="showForm.set(false)">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+            @if (saving()) { <mat-icon class="spin">refresh</mat-icon> Saving... }
+            @else { <mat-icon>save</mat-icon> {{ editingId() ? 'Update' : 'Add Student' }} }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Search + table -->
+  <div class="data-table-container">
+    <div class="table-toolbar">
+      <h3>Student Records</h3>
+      <div class="search-bar">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search by name, ID, class..." [(ngModel)]="searchQuery" class="search-input">
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student ID</th>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Class</th>
+          <th>Guardian</th>
+          <th>Year</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of pagedStudents(); track s.uid; let i = $index) {
+          <tr>
+            <td class="mono">{{ pageIndex * pageSize + i + 1 }}</td>
+            <td class="mono">{{ s.studentId }}</td>
+            <td>{{ s.fullName }}</td>
+            <td><span class="badge" [class]="s.gender === 'Male' ? 'badge-info' : 'badge-primary'">{{ s.gender }}</span></td>
+            <td><span class="badge badge-neutral">{{ s.classId }}</span></td>
+            <td>{{ s.guardianName }}</td>
+            <td class="mono">{{ s.enrollmentYear }}</td>
+            <td>
+              <div class="action-btns">
+                <button mat-icon-button (click)="openEdit(s)" matTooltip="Edit">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="delete(s.id ?? s.uid, s.fullName)" matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="empty-row">
+              <mat-icon>school</mat-icon>
+              No students found
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <mat-paginator
+      [length]="filteredStudents().length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    ></mat-paginator>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular
+/frontend/dist/
+/frontend/.angular/
+/frontend/.sass-cache/
+
+# Firebase
+/firebase/functions/lib/
+/firebase/functions/node_modules/
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+storage.rules.backup
+
+# Environment secrets
+/frontend/src/environments/environment.local.ts
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db

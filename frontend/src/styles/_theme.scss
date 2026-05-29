@@ -1,0 +1,271 @@
+@use '@angular/material' as mat;
+
+// ─── Custom Angular Material Palette ──────────────────────────────────────────
+
+$kbss-primary-palette: (
+  50:   #E3F2FD,
+  100:  #BBDEFB,
+  200:  #90CAF9,
+  300:  #64B5F6,
+  400:  #42A5F5,
+  500:  #1976D2,
+  600:  #1565C0,
+  700:  #0D47A1,
+  800:  #0A3D91,
+  900:  #062A79,
+  A100: #82B1FF,
+  A200: #448AFF,
+  A400: #2979FF,
+  A700: #2962FF,
+  contrast: (
+    50:   #000000,
+    100:  #000000,
+    200:  #000000,
+    300:  #000000,
+    400:  #000000,
+    500:  #FFFFFF,
+    600:  #FFFFFF,
+    700:  #FFFFFF,
+    800:  #FFFFFF,
+    900:  #FFFFFF,
+    A100: #000000,
+    A200: #FFFFFF,
+    A400: #FFFFFF,
+    A700: #FFFFFF,
+  )
+);
+
+$kbss-accent-palette: (
+  50:   #FFEBEE,
+  100:  #FFCDD2,
+  200:  #EF9A9A,
+  300:  #E57373,
+  400:  #EF5350,
+  500:  #C62828,
+  600:  #B71C1C,
+  700:  #B71C1C,
+  800:  #C62828,
+  900:  #B71C1C,
+  A100: #FF8A80,
+  A200: #FF5252,
+  A400: #FF1744,
+  A700: #D50000,
+  contrast: (
+    50:   #000000,
+    100:  #000000,
+    200:  #000000,
+    300:  #000000,
+    400:  #000000,
+    500:  #FFFFFF,
+    600:  #FFFFFF,
+    700:  #FFFFFF,
+    800:  #FFFFFF,
+    900:  #FFFFFF,
+    A100: #000000,
+    A200: #FFFFFF,
+    A400: #FFFFFF,
+    A700: #FFFFFF,
+  )
+);
+
+$kbss-primary: mat.define-palette($kbss-primary-palette, 600, 200, 800);
+$kbss-accent:  mat.define-palette($kbss-accent-palette, 500, 200, 700);
+$kbss-warn:    mat.define-palette(mat.$red-palette);
+
+$kbss-typography: mat.define-typography-config(
+  $font-family: 'DM Sans, system-ui, sans-serif',
+  $headline-1: mat.define-typography-level(60px, 60px, 300, 'Playfair Display'),
+  $headline-2: mat.define-typography-level(48px, 48px, 400, 'Playfair Display'),
+  $headline-3: mat.define-typography-level(34px, 40px, 400, 'Playfair Display'),
+  $headline-4: mat.define-typography-level(24px, 32px, 600, 'DM Sans'),
+  $headline-5: mat.define-typography-level(20px, 28px, 600, 'DM Sans'),
+  $headline-6: mat.define-typography-level(18px, 26px, 600, 'DM Sans'),
+  $subtitle-1: mat.define-typography-level(16px, 26px, 500, 'DM Sans'),
+  $subtitle-2: mat.define-typography-level(14px, 22px, 600, 'DM Sans'),
+  $body-1:     mat.define-typography-level(16px, 26px, 400, 'DM Sans'),
+  $body-2:     mat.define-typography-level(14px, 22px, 400, 'DM Sans'),
+  $caption:    mat.define-typography-level(12px, 18px, 400, 'DM Sans'),
+  $button:     mat.define-typography-level(14px, 14px, 600, 'DM Sans', 0.03em),
+);
+
+// Light theme
+$kbss-light-theme: mat.define-light-theme((
+  color: (
+    primary: $kbss-primary,
+    accent:  $kbss-accent,
+    warn:    $kbss-warn,
+  ),
+  typography: $kbss-typography,
+  density: 0,
+));
+
+// Dark theme
+$kbss-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $kbss-primary,
+    accent:  $kbss-accent,
+    warn:    $kbss-warn,
+  ),
+  typography: $kbss-typography,
+  density: 0,
+));
+
+// Emit core Angular Material styles
+@include mat.core();
+@include mat.all-component-themes($kbss-light-theme);
+@include mat.all-component-typographies($kbss-typography);
+
+// Dark theme
+[data-theme="dark"] {
+  @include mat.all-component-colors($kbss-dark-theme);
+}
+
+// ─── Material Component Overrides ─────────────────────────────────────────────
+
+// Buttons
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  border-radius: var(--radius-md) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  padding: 0 24px !important;
+  height: 44px !important;
+  font-family: var(--font-body) !important;
+
+  &.btn-sm {
+    height: 36px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+  }
+
+  &.btn-lg {
+    height: 52px !important;
+    padding: 0 32px !important;
+    font-size: 16px !important;
+  }
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.35) !important;
+  transition: all var(--transition-normal) !important;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Cards
+.mat-mdc-card {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  border: 1px solid var(--color-border) !important;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal) !important;
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover) !important;
+  }
+}
+
+// Form fields
+.mat-mdc-form-field {
+  width: 100%;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: var(--radius-md) !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__trailing {
+    border-radius: var(--radius-md) !important;
+  }
+
+  .mdc-notched-outline__leading {
+    border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+  }
+
+  .mdc-notched-outline__trailing {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+  }
+}
+
+// Tabs
+.mat-mdc-tab-group {
+  .mat-mdc-tab-header {
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .mat-mdc-tab {
+    font-weight: 600;
+    font-family: var(--font-body);
+  }
+}
+
+// Chips
+.mat-mdc-chip {
+  border-radius: var(--radius-full) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+// Dialog
+.mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    border-radius: var(--radius-xl) !important;
+  }
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  border-radius: var(--radius-md) !important;
+}
+
+// Sidenav
+.mat-drawer {
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0 !important;
+}
+
+// Table
+.mat-mdc-table {
+  background: var(--color-surface) !important;
+
+  .mat-mdc-header-row {
+    background: var(--color-surface-muted) !important;
+  }
+
+  .mat-mdc-row:hover {
+    background: var(--color-primary-50) !important;
+  }
+}
+
+// Progress bar
+.mat-mdc-progress-bar {
+  border-radius: var(--radius-full) !important;
+  height: 6px !important;
+}
+
+// Tooltip
+.mat-mdc-tooltip {
+  font-size: 12px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+// Select
+.mat-mdc-select-panel {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+// Menu
+.mat-mdc-menu-panel {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--color-border) !important;
+}

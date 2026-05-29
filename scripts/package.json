@@ -1,0 +1,12 @@
+{
+  "name": "kbss-scripts",
+  "version": "1.0.0",
+  "description": "K.B.S.S utility scripts",
+  "scripts": {
+    "seed": "node seed.js",
+    "seed:prod": "FIRESTORE_EMULATOR_HOST='' node seed.js"
+  },
+  "dependencies": {
+    "firebase": "^10.10.0"
+  }
+}

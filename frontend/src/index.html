@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>K.B.S.S Academic Portal — Kissi Bendu Secondary School</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kissi Bendu Secondary School Academic Web Portal — Koindu Town, Kailahun District, Sierra Leone. Student results, teacher tools, admissions, and more.">
+  <meta name="keywords" content="KBSS, Kissi Bendu Secondary School, Sierra Leone, Koindu, Kailahun, school portal, academic results">
+  <meta name="author" content="Kissi Bendu Secondary School">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="K.B.S.S Academic Portal">
+  <meta property="og:description" content="Kissi Bendu Secondary School — Koindu Town, Sierra Leone">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kbss-5a255.web.app">
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Theme color -->
+  <meta name="theme-color" content="#1565C0">
+
+  <style>
+    /* Critical loading screen CSS */
+    #app-loading {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0D47A1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+    #app-loading.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .loading-logo img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+    .loading-school-name {
+      color: white;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .loading-subtitle {
+      color: rgba(255,255,255,0.7);
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .loading-bar-track {
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      background: white;
+      border-radius: 2px;
+      animation: loading-progress 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+      50% { transform: scale(1.04); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    }
+    @keyframes loading-progress {
+      0% { width: 0; margin-left: 0; }
+      50% { width: 70%; margin-left: 30%; }
+      100% { width: 0; margin-left: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen — hidden by Angular after bootstrap -->
+  <div id="app-loading">
+    <div class="loading-logo">
+      <img src="assets/images/kbss-badge.png" alt="K.B.S.S Badge" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:36px;font-weight:700;color:#1565C0;\'>K</span>'">
+    </div>
+    <div class="loading-school-name">Kissi Bendu Secondary School</div>
+    <div class="loading-subtitle">Koindu Town, Kailahun District, Sierra Leone</div>
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill"></div>
+    </div>
+  </div>
+
+  <app-root></app-root>
+
+  <script>
+    // Hide loading screen once Angular boots
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.querySelector('app-root');
+      if (root) {
+        const observer = new MutationObserver(() => {
+          if (root.children.length > 0) {
+            const loader = document.getElementById('app-loading');
+            if (loader) {
+              loader.classList.add('fade-out');
+              setTimeout(() => loader.remove(), 500);
+            }
+            observer.disconnect();
+          }
+        });
+        observer.observe(root, { childList: true });
+      }
+    });
+  </script>
+</body>
+</html>

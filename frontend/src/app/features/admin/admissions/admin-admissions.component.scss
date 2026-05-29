@@ -1,0 +1,14 @@
+.filter-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-6); border-bottom: 2px solid var(--color-border); padding-bottom: 0; }
+.filter-tabs button { padding: 10px 20px; background: none; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--color-text-caption); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all var(--transition-fast); &.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; } }
+.applications-list { display: flex; flex-direction: column; gap: var(--space-4); }
+.application-card { padding: var(--space-5); border-left: 4px solid var(--color-border); &.status-approved { border-left-color: var(--color-success); } &.status-rejected { border-left-color: var(--color-error); } &.status-pending  { border-left-color: var(--color-warning); } }
+.app-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+.app-info h3 { font-size: 1rem; color: var(--color-text-heading); margin-bottom: var(--space-2); }
+.app-meta { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.app-class { font-size: 0.875rem; font-weight: 600; color: var(--color-primary); }
+.app-date { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--color-text-caption); mat-icon { font-size: 14px; width: 14px; height: 14px; } }
+.app-actions { display: flex; gap: var(--space-2); }
+.app-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-3); @media (max-width: 768px) { grid-template-columns: 1fr 1fr; } }
+.detail-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-text-caption); mat-icon { font-size: 16px; color: var(--color-primary); } }
+.app-docs { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); background: var(--color-info-bg); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--color-info); mat-icon { font-size: 18px; } }
+.empty-state { text-align: center; padding: var(--space-12); mat-icon { font-size: 48px; color: var(--color-text-muted); display: block; margin-bottom: var(--space-3); } p { color: var(--color-text-caption); } }
