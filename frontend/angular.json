@@ -41,6 +41,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/kbssWeb/",
               "budgets": [
                 {
                   "type": "initial",

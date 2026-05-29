@@ -27,8 +27,8 @@ jobs:
         run: npm ci
         working-directory: frontend
 
-      - name: Build (production, gh-pages base-href)
-        run: npx ng build --configuration production --base-href /kbssWeb/
+      - name: Build (production)
+        run: npx ng build --configuration production
         working-directory: frontend
 
       - name: Add 404.html for SPA client-side routing
