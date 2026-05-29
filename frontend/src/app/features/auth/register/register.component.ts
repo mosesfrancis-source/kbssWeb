@@ -184,13 +184,15 @@ function passwordMatchValidator(control: AbstractControl) {
         display: block;
       }
       .register-header h2 {
-        font-size: 1.4rem;
-        color: var(--color-text-heading);
-        margin-bottom: 4px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0d1e35;
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
       }
       .register-header p {
         font-size: 0.875rem;
-        color: var(--color-text-caption);
+        color: #3a5270;
         margin: 0;
       }
       .reg-form {
@@ -215,10 +217,10 @@ function passwordMatchValidator(control: AbstractControl) {
       .login-link-text {
         text-align: center;
         font-size: 0.875rem;
-        color: var(--color-text-caption);
+        color: #3a5270;
         margin-top: var(--space-4);
         a {
-          color: var(--color-primary);
+          color: #1E5AA8;
           text-decoration: none;
           font-weight: 600;
           &:hover {

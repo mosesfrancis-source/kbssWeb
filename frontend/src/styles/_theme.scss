@@ -194,6 +194,32 @@ $kbss-dark-theme: mat.define-dark-theme((
   .mdc-notched-outline__trailing {
     border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
   }
+
+  // Darker, readable label text
+  .mdc-floating-label,
+  .mat-mdc-floating-label {
+    color: #3a5270 !important;
+    font-weight: 500 !important;
+  }
+
+  // Darker prefix/suffix icons
+  .mat-mdc-form-field-icon-prefix mat-icon,
+  .mat-mdc-form-field-icon-suffix mat-icon,
+  [matPrefix] mat-icon,
+  [matSuffix] mat-icon {
+    color: #4a6a8a !important;
+  }
+
+  // Input text
+  input.mat-mdc-input-element,
+  textarea.mat-mdc-input-element {
+    color: #0d1e35 !important;
+  }
+
+  // Hint text
+  .mat-mdc-form-field-hint {
+    color: #5a7a9a !important;
+  }
 }
 
 // Tabs
