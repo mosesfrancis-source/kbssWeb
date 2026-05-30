@@ -74,6 +74,17 @@ interface NavLink {
               My Portal
             </a>
           }
+          <!-- Mobile: auth buttons (shown only inside the toggle menu on small screens) -->
+          @if (!auth.isLoggedIn()) {
+            <div class="nav-mobile-auth">
+              <a routerLink="/auth/register" class="nav-link mobile-auth-btn" (click)="closeMobile()">
+                Create Account
+              </a>
+              <a routerLink="/auth/login" class="nav-link mobile-auth-btn" (click)="closeMobile()">
+                Sign In
+              </a>
+            </div>
+          }
         </nav>
 
         <!-- Actions -->

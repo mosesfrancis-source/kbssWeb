@@ -3,11 +3,16 @@ import * as functions from 'firebase-functions';
 
 const db = admin.firestore();
 
+// Emails that are automatically granted admin role on account creation
+const ADMIN_EMAILS = ['kbsswebadmin@gmail.com', 'admin@kbss.edu.sl'];
+
 /**
  * Triggered on new user creation — sets custom role claim and creates /users doc.
  */
 export const onUserCreated = functions.auth.user().onCreate(async (user) => {
-  const role = 'student'; // default role; admin upgrades via setUserRole
+  const role: 'admin' | 'student' = ADMIN_EMAILS.includes((user.email ?? '').toLowerCase())
+    ? 'admin'
+    : 'student';
 
   try {
     // Set custom claim

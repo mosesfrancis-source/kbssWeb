@@ -171,6 +171,44 @@
   }
 }
 
+// Mobile-only auth buttons inside the toggle menu
+.nav-mobile-auth {
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
+
+.mobile-auth-btn {
+  justify-content: center !important;
+  text-align: center;
+
+  &:first-child {
+    background: white !important;
+    color: #0a4258 !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius-full) !important;
+
+    &:hover { background: #f0f8ff !important; }
+  }
+
+  &:last-child {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius-full) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    &:hover { background: rgba(255, 255, 255, 0.25) !important; }
+  }
+}
+
 // ─── Actions ─────────────────────────────────────────────────────────────────
 .nav-actions {
   display: flex;

@@ -27,6 +27,13 @@
   align-items: center;
   gap: var(--space-5);
   padding: var(--space-8) var(--space-8);
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-3);
+  }
 }
 
 .admin-badge {
@@ -41,7 +48,7 @@
 }
 
 .hero-text {
-  h1 { color: white; font-size: 1.75rem; margin-bottom: 4px; }
+  h1 { color: white; font-size: clamp(1.25rem, 4vw, 1.75rem); margin-bottom: 4px; }
   p  { color: rgba(255,255,255,0.75); font-size: 0.875rem; margin: 0; }
 }
 

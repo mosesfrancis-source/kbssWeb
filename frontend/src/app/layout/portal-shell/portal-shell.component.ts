@@ -60,19 +60,23 @@ import { AuthService } from '../../core/services/auth.service';
       @media (max-width: 768px) {
         padding: var(--space-4);
       }
+
+      @media (max-width: 480px) {
+        padding: var(--space-3) var(--space-3);
+      }
     }
 
-    /* Overlay: full-screen semi-transparent backdrop */
+    /* Overlay: drawer backdrop — mobile only; desktop sidebar pushes content */
     .sidebar-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.5);
       z-index: calc(var(--z-fixed) - 1);
       cursor: pointer;
 
-      /* On desktop, only show overlay if sidebar is open (it sits above content) */
+      /* On desktop the sidebar just shifts content — no dimming overlay needed */
       @media (min-width: 1025px) {
-        background: rgba(0, 0, 0, 0.25);
+        display: none;
       }
     }
   `],
