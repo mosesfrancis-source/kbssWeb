@@ -1,6 +1,11 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { ApplicationConfig } from '@angular/core';
+import {
+  provideRouter,
+  withInMemoryScrolling,
+  withPreloading,
+  PreloadAllModules,
+} from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -9,7 +14,7 @@ import {
   getFirestore,
   provideFirestore,
   connectFirestoreEmulator,
-  enableIndexedDbPersistence,
+  enableMultiTabIndexedDbPersistence,
 } from '@angular/fire/firestore';
 import { getStorage, provideStorage, connectStorageEmulator } from '@angular/fire/storage';
 import { getFunctions, provideFunctions, connectFunctionsEmulator } from '@angular/fire/functions';
@@ -24,10 +29,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
       routes,
-      withViewTransitions(),
+      // Preload all lazy routes in the background — navigation feels instant
+      withPreloading(PreloadAllModules),
       withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })
     ),
-    provideAnimations(),
+    // Async animations: loads Material animations only when needed (faster startup)
+    provideAnimationsAsync(),
     provideHttpClient(withInterceptors([loadingInterceptor, errorInterceptor])),
 
     // Firebase
@@ -46,12 +53,10 @@ export const appConfig: ApplicationConfig = {
       if (environment.useEmulators) {
         connectFirestoreEmulator(firestore, 'localhost', 8080);
       } else {
-        // Enable offline persistence for the main app
-        enableIndexedDbPersistence(firestore).catch((err) => {
-          if (err.code === 'failed-precondition') {
-            console.warn('Firestore persistence: multiple tabs open');
-          } else if (err.code === 'unimplemented') {
-            console.warn('Firestore persistence: not supported in this browser');
+        // Multi-tab safe offline persistence
+        enableMultiTabIndexedDbPersistence(firestore).catch((err) => {
+          if (err.code !== 'failed-precondition' && err.code !== 'unimplemented') {
+            console.warn('Firestore persistence error:', err.code);
           }
         });
       }

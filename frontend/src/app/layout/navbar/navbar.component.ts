@@ -39,15 +39,12 @@ interface NavLink {
   template: `
     <header class="navbar" [class.scrolled]="isScrolled()">
       <div class="navbar-inner container">
+
         <!-- Logo / Brand -->
-        <a routerLink="/home" class="brand">
+        <a routerLink="/home" class="brand" (click)="closeMobile()">
           <div class="brand-badge-wrap">
-            <img
-              src="assets/images/kbss-badge.svg"
-              alt="K.B.S.S"
-              class="brand-badge"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
-            />
+            <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="brand-badge"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
             <div class="brand-badge-fallback" style="display:none">K</div>
           </div>
           <div class="brand-text">
@@ -56,78 +53,42 @@ interface NavLink {
           </div>
         </a>
 
-        <!-- Desktop nav links -->
-        <nav class="nav-links" [class.open]="mobileOpen()">
+        <!-- Desktop nav links (hidden on mobile) -->
+        <nav class="nav-links-desktop">
           @for (link of navLinks; track link.path) {
-            <a
-              [routerLink]="link.path"
-              routerLinkActive="active"
-              class="nav-link"
-              (click)="closeMobile()"
-            >
+            <a [routerLink]="link.path" routerLinkActive="active" class="nav-link">
               {{ link.label }}
             </a>
           }
-          <!-- Mobile: portal buttons -->
-          @if (auth.isLoggedIn()) {
-            <a [routerLink]="auth.getRedirectPath()" class="nav-link mobile-portal" (click)="closeMobile()">
-              My Portal
-            </a>
-          }
-          <!-- Mobile: auth buttons (shown only inside the toggle menu on small screens) -->
-          @if (!auth.isLoggedIn()) {
-            <div class="nav-mobile-auth">
-              <a routerLink="/auth/register" class="nav-link mobile-auth-btn" (click)="closeMobile()">
-                Create Account
-              </a>
-              <a routerLink="/auth/login" class="nav-link mobile-auth-btn" (click)="closeMobile()">
-                Sign In
-              </a>
-            </div>
-          }
         </nav>
 
-        <!-- Actions -->
+        <!-- Desktop action buttons -->
         <div class="nav-actions">
-          <!-- Theme toggle -->
-          <button
-            mat-icon-button
-            (click)="theme.toggle()"
-            [matTooltip]="theme.currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'"
-            aria-label="Toggle theme"
-            class="icon-btn"
-          >
+          <button mat-icon-button (click)="theme.toggle()"
+                  [matTooltip]="theme.currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'"
+                  aria-label="Toggle theme" class="icon-btn">
             <mat-icon>{{ theme.currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
           </button>
 
           @if (auth.isLoggedIn()) {
-            <!-- Notifications -->
-            <button
-              mat-icon-button
-              [routerLink]="[auth.getRedirectPath().split('/')[1] + '/notifications']"
-              [matBadge]="unreadCount() || null"
-              matBadgeColor="warn"
-              matBadgeSize="small"
-              class="icon-btn"
-              aria-label="Notifications"
-            >
+            <button mat-icon-button
+                    [routerLink]="[auth.getRedirectPath().split('/')[1] + '/notifications']"
+                    [matBadge]="unreadCount() || null" matBadgeColor="warn" matBadgeSize="small"
+                    class="icon-btn" aria-label="Notifications">
               <mat-icon>notifications_outlined</mat-icon>
             </button>
 
-            <!-- User menu -->
             <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
               @if (auth.currentUser()?.photoURL) {
                 <img [src]="auth.currentUser()!.photoURL" alt="Avatar" class="user-avatar" />
               } @else {
-                <div class="user-avatar-fallback">
-                  {{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}
-                </div>
+                <div class="user-avatar-fallback">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</div>
               }
               <span class="user-name">{{ getUserFirstName() }}</span>
               <mat-icon>expand_more</mat-icon>
             </button>
 
-            <mat-menu #userMenu="matMenu" class="user-dropdown">
+            <mat-menu #userMenu="matMenu">
               <div class="user-menu-header">
                 <div class="um-name">{{ auth.currentUser()?.displayName }}</div>
                 <div class="um-role">{{ auth.role() | titlecase }}</div>
@@ -143,32 +104,73 @@ interface NavLink {
               </button>
             </mat-menu>
           } @else {
-            <a routerLink="/auth/register" mat-raised-button class="register-btn">
-              Create Account
-            </a>
-            <a routerLink="/auth/login" mat-raised-button class="login-btn">
-              Sign In
-            </a>
+            <a routerLink="/auth/register" mat-raised-button class="register-btn">Create Account</a>
+            <a routerLink="/auth/login"    mat-raised-button class="login-btn">Sign In</a>
           }
 
-          <!-- Mobile hamburger -->
-          <button
-            mat-icon-button
-            class="hamburger"
-            (click)="toggleMobile()"
-            [attr.aria-expanded]="mobileOpen()"
-            aria-label="Toggle menu"
-          >
-            <mat-icon>{{ mobileOpen() ? 'close' : 'menu' }}</mat-icon>
+          <!-- Hamburger — mobile only -->
+          <button mat-icon-button class="hamburger"
+                  (click)="toggleMobile()"
+                  [attr.aria-expanded]="mobileOpen()"
+                  aria-label="Toggle navigation menu">
+            <span class="ham-bar" [class.open]="mobileOpen()">
+              <span></span><span></span><span></span>
+            </span>
           </button>
         </div>
       </div>
-
-      <!-- Mobile overlay -->
-      @if (mobileOpen()) {
-        <div class="nav-overlay" (click)="closeMobile()"></div>
-      }
     </header>
+
+    <!-- ── Mobile drawer (outside header so it's full-height) ── -->
+    <div class="mobile-drawer" [class.open]="mobileOpen()" role="dialog" aria-label="Navigation menu">
+      <div class="drawer-header">
+        <div class="drawer-brand">
+          <img src="assets/images/kbss-badge.svg" alt="" class="drawer-badge"
+               onerror="this.style.display='none'">
+          <span class="drawer-school">K.B.S.S</span>
+        </div>
+        <button mat-icon-button (click)="closeMobile()" class="drawer-close" aria-label="Close menu">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <nav class="drawer-nav">
+        @for (link of navLinks; track link.path) {
+          <a [routerLink]="link.path" routerLinkActive="drawer-active"
+             class="drawer-link" (click)="closeMobile()">
+            {{ link.label }}
+          </a>
+        }
+        @if (auth.isLoggedIn()) {
+          <a [routerLink]="auth.getRedirectPath()" class="drawer-link drawer-portal" (click)="closeMobile()">
+            <mat-icon>dashboard</mat-icon> My Portal
+          </a>
+        }
+      </nav>
+
+      @if (!auth.isLoggedIn()) {
+        <div class="drawer-auth">
+          <a routerLink="/auth/register" mat-raised-button class="drawer-register" (click)="closeMobile()">
+            <mat-icon>person_add</mat-icon> Create Account
+          </a>
+          <a routerLink="/auth/login" mat-stroked-button class="drawer-login" (click)="closeMobile()">
+            <mat-icon>login</mat-icon> Sign In
+          </a>
+        </div>
+      }
+
+      <div class="drawer-footer">
+        <button mat-icon-button (click)="theme.toggle()" class="drawer-theme" aria-label="Toggle theme">
+          <mat-icon>{{ theme.currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+        <span class="drawer-motto">Prodeo Et Propatria</span>
+      </div>
+    </div>
+
+    <!-- Backdrop -->
+    @if (mobileOpen()) {
+      <div class="mobile-backdrop" (click)="closeMobile()" aria-hidden="true"></div>
+    }
   `,
   styleUrls: ['./navbar.component.scss'],
 })

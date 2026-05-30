@@ -325,32 +325,27 @@ body {
 // ─── Route animation host ─────────────────────────────────────────────────────
 .route-wrapper {
   display: block;
-  animation: fadeSlideIn 0.3s ease forwards;
+  will-change: opacity, transform;
+  animation: fadeSlideIn 0.15s ease forwards;
 }
 
 @keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 // ─── Glassmorphism ────────────────────────────────────────────────────────────
 .glass {
   background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .glass-dark {
   background: rgba(13, 71, 161, 0.15);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(21, 101, 192, 0.25);
 }
 

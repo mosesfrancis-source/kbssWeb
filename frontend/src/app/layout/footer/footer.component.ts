@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterLink, CommonModule, MatIconModule],
+  imports: [RouterLink, CommonModule, MatIconModule, MatButtonModule],
   template: `
     <footer class="footer">
       <div class="footer-main container">
@@ -55,6 +56,18 @@ import { MatIconModule } from '@angular/material/icon';
             <li><a routerLink="/auth/login">Admin Portal</a></li>
             <li><a routerLink="/contact">Contact Us</a></li>
           </ul>
+
+          <!-- Create Account CTA -->
+          <div class="footer-cta">
+            <p class="footer-cta-text">New to K.B.S.S?</p>
+            <a routerLink="/auth/register" mat-raised-button class="footer-register-btn">
+              <mat-icon>person_add</mat-icon>
+              Create Account
+            </a>
+            <a routerLink="/auth/login" class="footer-signin-link">
+              Already have an account? <strong>Sign In</strong>
+            </a>
+          </div>
         </div>
 
         <div class="footer-links-group">
