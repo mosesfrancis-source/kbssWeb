@@ -66,7 +66,7 @@ const ADMIN_ITEMS: SidebarItem[] = [
           <span class="sidebar-abbr">K.B.S.S</span>
           <span class="sidebar-role">{{ getRoleLabel() }}</span>
         </div>
-        <button mat-icon-button (click)="toggle.emit()" class="sidebar-toggle-btn"
+        <button mat-icon-button (click)="close.emit()" class="sidebar-toggle-btn"
                 aria-label="Collapse sidebar" matTooltip="Collapse sidebar" matTooltipPosition="right">
           <mat-icon>chevron_left</mat-icon>
         </button>
@@ -122,7 +122,6 @@ export class SidebarComponent {
   @Input() open = true;
   @Input() role: UserRole = 'student';
   @Output() close = new EventEmitter<void>();
-  @Output() toggle = new EventEmitter<void>();
 
   auth = inject(AuthService);
 

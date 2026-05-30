@@ -19,7 +19,6 @@ import { AuthService } from '../../core/services/auth.service';
         [open]="sidebarOpen()"
         [role]="auth.role()!"
         (close)="closeSidebar()"
-        (toggle)="toggleSidebar()"
       />
 
       <!-- Overlay — closes sidebar on any tap/click, shown whenever sidebar is open -->
@@ -121,5 +120,8 @@ export class PortalShellComponent implements OnInit {
 
   closeSidebar(): void {
     this.sidebarOpen.set(false);
+    if (window.innerWidth >= 1025) {
+      localStorage.setItem(this.PREF_KEY, 'closed');
+    }
   }
 }

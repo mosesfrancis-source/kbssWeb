@@ -109,7 +109,7 @@ service cloud.firestore {
 
     // ─── /announcements ─────────────────────────────────────────────────────────
     match /announcements/{announcementId} {
-      allow read: if isAuthenticated();
+      allow read: if true;  // public news page needs unauthenticated reads
       allow create: if isAdminOrTeacher();
       allow update: if isAdminOrTeacher();
       allow delete: if isAdmin();
