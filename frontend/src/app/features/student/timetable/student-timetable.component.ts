@@ -36,9 +36,9 @@ import { MatIconModule } from '@angular/material/icon';
                     </td>
                   } @else {
                     @for (day of days; track day) {
-                      <td class="class-cell" [class]="getSubjectColor(timetable[day]?.[period.number])">
-                        <div class="subject-name">{{ timetable[day]?.[period.number]?.subject || '—' }}</div>
-                        <div class="teacher-name">{{ timetable[day]?.[period.number]?.teacher || '' }}</div>
+                      <td class="class-cell" [class]="getSubjectColor(timetable[day] && timetable[day][period.number])">
+                        <div class="subject-name">{{ (timetable[day] && timetable[day][period.number] && timetable[day][period.number].subject) || '—' }}</div>
+                        <div class="teacher-name">{{ (timetable[day] && timetable[day][period.number] && timetable[day][period.number].teacher) || '' }}</div>
                       </td>
                     }
                   }

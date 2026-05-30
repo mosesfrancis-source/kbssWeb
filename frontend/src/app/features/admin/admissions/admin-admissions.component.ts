@@ -63,7 +63,7 @@ import { Timestamp } from '@angular/fire/firestore';
               <div class="detail-item"><mat-icon>email</mat-icon><span>{{ a.guardianEmail }}</span></div>
             </div>
 
-            @if (a.documentsURL?.length) {
+            @if (a.documentsURL && a.documentsURL.length) {
               <div class="app-docs">
                 <mat-icon>attach_file</mat-icon>
                 <span>{{ a.documentsURL.length }} document(s) uploaded</span>

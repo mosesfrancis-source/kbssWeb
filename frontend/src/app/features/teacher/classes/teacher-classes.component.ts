@@ -35,7 +35,7 @@ import { SchoolClass, Student } from '../../../shared/models';
               </div>
               <div class="class-stat">
                 <mat-icon>menu_book</mat-icon>
-                <span>{{ cls.subjectIds?.length ?? 0 }} Subjects</span>
+                <span>{{ (cls.subjectIds && cls.subjectIds.length) || 0 }} Subjects</span>
               </div>
             </div>
             <div class="class-actions">

@@ -60,7 +60,7 @@ import { SchoolClass, Subject, Teacher } from '../../../shared/models';
                     <span class="cc-year">{{ c.academicYear }}</span>
                   </div>
                   <div class="cc-body">
-                    <div class="cc-meta"><mat-icon>menu_book</mat-icon>{{ c.subjectIds?.length ?? 0 }} subjects</div>
+                    <div class="cc-meta"><mat-icon>menu_book</mat-icon>{{ (c.subjectIds && c.subjectIds.length) || 0 }} subjects</div>
                   </div>
                   <button mat-icon-button color="warn" class="cc-delete" (click)="deleteClass(c.id!)">
                     <mat-icon>delete</mat-icon>
