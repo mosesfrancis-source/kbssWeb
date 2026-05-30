@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -21,11 +21,6 @@ import { AuthService } from '../../core/services/auth.service';
         (close)="closeSidebar()"
       />
 
-      <!-- Overlay — closes sidebar on any tap/click, shown whenever sidebar is open -->
-      @if (sidebarOpen()) {
-        <div class="sidebar-overlay" (click)="closeSidebar()"></div>
-      }
-
       <main class="portal-main" [class.sidebar-open]="sidebarOpen()">
         <div class="route-wrapper">
           <router-outlet />
@@ -45,11 +40,9 @@ import { AuthService } from '../../core/services/auth.service';
       min-height: 100vh;
       transition: padding-left var(--transition-normal);
 
-      /* Shift right only on desktop when sidebar is open */
-      @media (min-width: 1025px) {
-        &.sidebar-open {
-          padding-left: var(--sidebar-width);
-        }
+      /* Sidebar always pushes content — no overlay, no hiding */
+      &.sidebar-open {
+        padding-left: var(--sidebar-width);
       }
     }
 
@@ -63,22 +56,6 @@ import { AuthService } from '../../core/services/auth.service';
 
       @media (max-width: 480px) {
         padding: var(--space-3) var(--space-3);
-      }
-    }
-
-    /* Overlay: drawer backdrop — mobile only; desktop sidebar pushes content */
-    .sidebar-overlay {
-      position: fixed;
-      top: var(--navbar-height);  /* never cover the top navbar */
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: calc(var(--z-fixed) - 2);
-      cursor: pointer;
-
-      @media (min-width: 1025px) {
-        display: none;
       }
     }
   `],
@@ -97,14 +74,6 @@ export class PortalShellComponent implements OnInit {
       this.sidebarOpen.set(false);
     } else {
       this.sidebarOpen.set(saved !== 'closed');
-    }
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    // Only force-close when dropping to mobile; never auto-open on desktop
-    if (window.innerWidth < 1025) {
-      this.sidebarOpen.set(false);
     }
   }
 

@@ -167,10 +167,9 @@ export class LoginComponent {
     const { email, password } = this.form.value;
     this.authService.login(email!, password!).subscribe({
       next: () => {
-        this.loading.set(false);
-        this.toast.success(`Welcome back! Redirecting to your portal...`);
-        // Delay to allow token refresh
+        // Keep spinner visible during the 800ms token-refresh delay, then navigate silently
         setTimeout(() => {
+          this.loading.set(false);
           this.router.navigate([this.authService.getRedirectPath()]);
         }, 800);
       },

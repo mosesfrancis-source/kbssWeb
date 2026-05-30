@@ -271,10 +271,11 @@ export class RegisterComponent {
     const { email, password, displayName, role } = this.form.value;
     this.authService.register(email!, password!, displayName!, role as 'student' | 'teacher').subscribe({
       next: () => {
-        this.loading.set(false);
-        this.toast.success("Account created! Welcome to K.B.S.S portal.");
         const path = role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard';
-        setTimeout(() => this.router.navigate([path]), 800);
+        setTimeout(() => {
+          this.loading.set(false);
+          this.router.navigate([path]);
+        }, 800);
       },
       error: (err) => {
         this.loading.set(false);
