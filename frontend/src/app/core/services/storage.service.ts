@@ -7,6 +7,7 @@ import {
   deleteObject,
   listAll,
   StorageReference,
+  UploadMetadata,
 } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -26,7 +27,8 @@ export class StorageService {
    */
   upload(path: string, file: File): Observable<UploadProgress> {
     const storageRef = ref(this.storage, path);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const meta: UploadMetadata = { contentType: file.type || 'application/octet-stream' };
+    const uploadTask = uploadBytesResumable(storageRef, file, meta);
 
     return new Observable<UploadProgress>((observer) => {
       uploadTask.on(
@@ -61,7 +63,8 @@ export class StorageService {
   uploadAndGetURL(path: string, file: File): Observable<string> {
     return new Observable<string>((observer) => {
       const storageRef = ref(this.storage, path);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      const meta: UploadMetadata = { contentType: file.type || 'application/octet-stream' };
+      const uploadTask = uploadBytesResumable(storageRef, file, meta);
 
       uploadTask.on(
         'state_changed',

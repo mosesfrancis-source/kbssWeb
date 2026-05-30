@@ -33,6 +33,7 @@ const TEACHER_ITEMS: SidebarItem[] = [
   { label: 'Materials',    icon: 'upload_file',         path: '/teacher/materials' },
   { label: 'Announcements',icon: 'campaign',            path: '/teacher/announcements' },
   { label: 'Performance',  icon: 'bar_chart',           path: '/teacher/performance' },
+  { label: 'My Profile',   icon: 'account_circle',      path: '/teacher/profile' },
 ];
 
 const ADMIN_ITEMS: SidebarItem[] = [
@@ -48,6 +49,7 @@ const ADMIN_ITEMS: SidebarItem[] = [
   { label: 'Users',        icon: 'manage_accounts',     path: '/admin/users' },
   { label: 'Analytics',    icon: 'analytics',           path: '/admin/analytics' },
   { label: 'Settings',     icon: 'settings',            path: '/admin/settings' },
+  { label: 'My Profile',   icon: 'account_circle',      path: '/admin/profile' },
 ];
 
 @Component({
@@ -64,6 +66,10 @@ const ADMIN_ITEMS: SidebarItem[] = [
           <span class="sidebar-abbr">K.B.S.S</span>
           <span class="sidebar-role">{{ getRoleLabel() }}</span>
         </div>
+        <button mat-icon-button (click)="toggle.emit()" class="sidebar-toggle-btn"
+                aria-label="Collapse sidebar" matTooltip="Collapse sidebar" matTooltipPosition="right">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
       </div>
 
       <!-- Navigation -->
@@ -116,6 +122,7 @@ export class SidebarComponent {
   @Input() open = true;
   @Input() role: UserRole = 'student';
   @Output() close = new EventEmitter<void>();
+  @Output() toggle = new EventEmitter<void>();
 
   auth = inject(AuthService);
 

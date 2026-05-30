@@ -276,6 +276,14 @@ export const routes: Routes = [
           ),
         title: 'Student Performance',
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/teacher/profile/teacher-profile.component').then(
+            (m) => m.TeacherProfileComponent
+          ),
+        title: 'My Profile — Teacher Portal',
+      },
     ],
   },
 
@@ -385,6 +393,14 @@ export const routes: Routes = [
             (m) => m.AdminSettingsComponent
           ),
         title: 'Settings',
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/admin/profile/admin-profile.component').then(
+            (m) => m.AdminProfileComponent
+          ),
+        title: 'My Profile — Admin Portal',
       },
     ],
   },

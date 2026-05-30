@@ -11,12 +11,12 @@ import { StorageService } from '../../../core/services/storage.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, of, firstValueFrom } from 'rxjs';
-import { Student } from '../../../shared/models';
+import { Teacher } from '../../../shared/models';
 import { updateProfile } from '@angular/fire/auth';
 import { Auth } from '@angular/fire/auth';
 
 @Component({
-  selector: 'app-student-profile',
+  selector: 'app-teacher-profile',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatButtonModule,
@@ -37,7 +37,7 @@ import { Auth } from '@angular/fire/auth';
               <img [src]="previewURL() || user()!.photoURL" alt="Profile photo" class="profile-photo">
             } @else {
               <div class="profile-photo-fallback">
-                {{ user()?.displayName?.charAt(0) || 'S' }}
+                {{ user()?.displayName?.charAt(0) || 'T' }}
               </div>
             }
             <label class="avatar-upload-btn" for="avatarInput">
@@ -47,8 +47,8 @@ import { Auth } from '@angular/fire/auth';
                    style="display:none" (change)="onAvatarChange($event)">
           </div>
           <h3>{{ user()?.displayName }}</h3>
-          <p class="role-tag"><span class="badge badge-primary">Student</span></p>
-          <p class="mono">{{ studentData()?.studentId }}</p>
+          <p class="role-tag"><span class="badge badge-success">Teacher</span></p>
+          <p class="mono">{{ teacherData()?.teacherId }}</p>
 
           <button mat-raised-button color="primary" (click)="saveAvatar()"
                   [disabled]="!selectedFile() || uploading()" class="w-full">
@@ -64,37 +64,24 @@ import { Auth } from '@angular/fire/auth';
         <div class="profile-form card">
           <h3>Personal Information</h3>
           <form [formGroup]="form" (ngSubmit)="save()" class="prof-form">
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Full Name</mat-label>
-                <input matInput formControlName="fullName">
-                <mat-icon matPrefix>person</mat-icon>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Date of Birth</mat-label>
-                <input matInput type="date" formControlName="dateOfBirth">
-                <mat-icon matPrefix>cake</mat-icon>
-              </mat-form-field>
-            </div>
+            <mat-form-field appearance="outline">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="fullName">
+              <mat-icon matPrefix>person</mat-icon>
+            </mat-form-field>
 
             <div class="form-row">
               <mat-form-field appearance="outline">
-                <mat-label>Guardian Name</mat-label>
-                <input matInput formControlName="guardianName">
-                <mat-icon matPrefix>people</mat-icon>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Guardian Phone</mat-label>
-                <input matInput formControlName="guardianPhone">
+                <mat-label>Phone</mat-label>
+                <input matInput formControlName="phone">
                 <mat-icon matPrefix>phone</mat-icon>
               </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Qualification</mat-label>
+                <input matInput formControlName="qualification">
+                <mat-icon matPrefix>school</mat-icon>
+              </mat-form-field>
             </div>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Home Address</mat-label>
-              <textarea matInput formControlName="address" rows="2"></textarea>
-              <mat-icon matPrefix>home</mat-icon>
-            </mat-form-field>
 
             <div class="form-actions">
               <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
@@ -126,7 +113,7 @@ import { Auth } from '@angular/fire/auth';
     @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
   `],
 })
-export class StudentProfileComponent {
+export class TeacherProfileComponent {
   private auth = inject(AuthService);
   private fs = inject(FirestoreService);
   private storage = inject(StorageService);
@@ -140,19 +127,17 @@ export class StudentProfileComponent {
   previewURL = signal<string | null>(null);
   selectedFile = signal<File | null>(null);
 
-  studentData = toSignal(
+  teacherData = toSignal(
     this.auth.currentUser$.pipe(
-      switchMap((u) => u ? this.fs.doc$<Student>(`students/${u.uid}`) : of(null))
+      switchMap((u) => u ? this.fs.doc$<Teacher>(`teachers/${u.uid}`) : of(null))
     ),
     { initialValue: null }
   );
 
   form = this.fb.group({
     fullName:      [''],
-    dateOfBirth:   [''],
-    guardianName:  [''],
-    guardianPhone: [''],
-    address:       [''],
+    phone:         [''],
+    qualification: [''],
   });
 
   onAvatarChange(event: Event): void {
@@ -176,6 +161,7 @@ export class StudentProfileComponent {
           const currentUser = this.firebaseAuth.currentUser;
           if (currentUser) await updateProfile(currentUser, { photoURL: url });
           await firstValueFrom(this.fs.set(`users/${uid}`, { photoURL: url }, true));
+          await firstValueFrom(this.fs.set(`teachers/${uid}`, { photoURL: url }, true));
           this.auth.refreshToken();
           this.selectedFile.set(null);
           this.uploading.set(false);
@@ -193,8 +179,17 @@ export class StudentProfileComponent {
     const uid = this.user()?.uid;
     if (!uid) return;
     this.saving.set(true);
-    this.fs.update(`students/${uid}`, this.form.value as object).subscribe({
-      next: () => { this.saving.set(false); this.toast.success('Profile saved!'); },
+    const data = this.form.value;
+    this.fs.set(`teachers/${uid}`, data as object, true).subscribe({
+      next: async () => {
+        try {
+          const cu = this.firebaseAuth.currentUser;
+          if (cu && data.fullName) await updateProfile(cu, { displayName: data.fullName });
+          this.auth.refreshToken();
+        } catch { /* display name update is best-effort */ }
+        this.saving.set(false);
+        this.toast.success('Profile saved!');
+      },
       error: () => { this.saving.set(false); this.toast.error('Save failed.'); },
     });
   }

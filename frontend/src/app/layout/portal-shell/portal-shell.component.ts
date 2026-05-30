@@ -19,6 +19,7 @@ import { AuthService } from '../../core/services/auth.service';
         [open]="sidebarOpen()"
         [role]="auth.role()!"
         (close)="closeSidebar()"
+        (toggle)="toggleSidebar()"
       />
 
       <!-- Overlay — closes sidebar on any tap/click, shown whenever sidebar is open -->
@@ -85,25 +86,37 @@ import { AuthService } from '../../core/services/auth.service';
 export class PortalShellComponent implements OnInit {
   auth = inject(AuthService);
 
-  /* Start open only on desktop; closed on mobile so it doesn't cover the screen */
   sidebarOpen = signal(false);
 
+  private readonly PREF_KEY = 'kbss-sidebar';
+
   ngOnInit(): void {
-    this.sidebarOpen.set(window.innerWidth >= 1025);
+    const saved = localStorage.getItem(this.PREF_KEY);
+    // On mobile always start closed; on desktop respect saved pref (default open)
+    if (window.innerWidth < 1025) {
+      this.sidebarOpen.set(false);
+    } else {
+      this.sidebarOpen.set(saved !== 'closed');
+    }
   }
 
   @HostListener('window:resize')
   onResize(): void {
-    /* Auto-close when shrinking to mobile; auto-open when expanding to desktop */
+    // Only force-close when dropping to mobile; never auto-open on desktop
     if (window.innerWidth < 1025) {
       this.sidebarOpen.set(false);
-    } else {
-      this.sidebarOpen.set(true);
     }
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update((v) => !v);
+    this.sidebarOpen.update((v) => {
+      const next = !v;
+      // Only persist the desktop preference
+      if (window.innerWidth >= 1025) {
+        localStorage.setItem(this.PREF_KEY, next ? 'open' : 'closed');
+      }
+      return next;
+    });
   }
 
   closeSidebar(): void {

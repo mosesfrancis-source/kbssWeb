@@ -25,9 +25,11 @@ import { map } from 'rxjs/operators';
   ],
   template: `
     <header class="portal-navbar" [class.sidebar-open]="sidebarOpen">
-      <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn" aria-label="Toggle sidebar">
-        <mat-icon>{{ sidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
-      </button>
+      @if (!sidebarOpen) {
+        <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn" aria-label="Open sidebar">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
 
       <!-- Search -->
       <div class="search-bar">
