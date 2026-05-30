@@ -1,14 +1,13 @@
 .sidebar {
   position: fixed;
-  top: 0;
+  top: var(--navbar-height);  /* start below navbar so it never covers the top bar */
   left: 0;
   bottom: 0;
   width: var(--sidebar-width);
   background: var(--color-primary-dark);
-  z-index: var(--z-fixed);
+  z-index: calc(var(--z-fixed) - 1);  /* navbar sits above the sidebar */
   display: flex;
   flex-direction: column;
-  /* Collapsible at ALL widths — controlled by .open class */
   transform: translateX(-100%);
   transition: transform var(--transition-normal);
 

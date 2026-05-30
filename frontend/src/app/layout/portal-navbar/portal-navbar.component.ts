@@ -24,7 +24,7 @@ import { map } from 'rxjs/operators';
     MatFormFieldModule, MatInputModule, FormsModule,
   ],
   template: `
-    <header class="portal-navbar" [class.sidebar-open]="sidebarOpen">
+    <header class="portal-navbar">
       @if (!sidebarOpen) {
         <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn" aria-label="Open sidebar">
           <mat-icon>menu</mat-icon>
@@ -143,12 +143,8 @@ import { map } from 'rxjs/operators';
       align-items: center;
       gap: var(--space-4);
       padding: 0 var(--space-6);
-      z-index: calc(var(--z-fixed) - 1);
-      transition: left var(--transition-normal);
-
-      @media (min-width: 1025px) {
-        &.sidebar-open { left: var(--sidebar-width); }
-      }
+      /* above sidebar so it is never covered */
+      z-index: var(--z-fixed);
     }
 
     .menu-btn { color: var(--color-text-body); }

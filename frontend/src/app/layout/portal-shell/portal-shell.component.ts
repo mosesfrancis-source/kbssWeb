@@ -69,13 +69,14 @@ import { AuthService } from '../../core/services/auth.service';
     /* Overlay: drawer backdrop — mobile only; desktop sidebar pushes content */
     .sidebar-overlay {
       position: fixed;
-      inset: 0;
+      top: var(--navbar-height);  /* never cover the top navbar */
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.5);
-      /* Below portal-navbar (--z-fixed - 1 = 1199) so menu button stays clickable */
       z-index: calc(var(--z-fixed) - 2);
       cursor: pointer;
 
-      /* On desktop the sidebar just shifts content — no dimming overlay needed */
       @media (min-width: 1025px) {
         display: none;
       }
