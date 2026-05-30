@@ -71,7 +71,8 @@ import { AuthService } from '../../core/services/auth.service';
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.5);
-      z-index: calc(var(--z-fixed) - 1);
+      /* Below portal-navbar (--z-fixed - 1 = 1199) so menu button stays clickable */
+      z-index: calc(var(--z-fixed) - 2);
       cursor: pointer;
 
       /* On desktop the sidebar just shifts content — no dimming overlay needed */

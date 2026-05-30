@@ -330,7 +330,8 @@
 .mobile-backdrop {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.55);
-  z-index: calc(var(--z-fixed) + 5);
+  /* Keep backdrop BELOW navbar (1200) so hamburger stays clickable */
+  z-index: calc(var(--z-fixed) - 2);
   cursor: pointer;
   will-change: opacity;
   animation: backdropIn 0.2s ease forwards;

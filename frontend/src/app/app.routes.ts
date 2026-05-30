@@ -339,6 +339,14 @@ export const routes: Routes = [
         title: 'Announcements',
       },
       {
+        path: 'news',
+        loadComponent: () =>
+          import('./features/admin/news/admin-news.component').then(
+            (m) => m.AdminNewsComponent
+          ),
+        title: 'Post News — Admin',
+      },
+      {
         path: 'gallery',
         loadComponent: () =>
           import('./features/admin/gallery/admin-gallery.component').then(

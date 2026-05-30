@@ -41,6 +41,7 @@ const ADMIN_ITEMS: SidebarItem[] = [
   { label: 'Teachers',     icon: 'supervisor_account',  path: '/admin/teachers' },
   { label: 'Classes',      icon: 'class',               path: '/admin/classes' },
   { label: 'Admissions',   icon: 'person_add',          path: '/admin/admissions' },
+  { label: 'Post News',    icon: 'edit_note',           path: '/admin/news' },
   { label: 'Announcements',icon: 'campaign',            path: '/admin/announcements' },
   { label: 'Gallery',      icon: 'photo_library',       path: '/admin/gallery' },
   { label: 'Reports',      icon: 'description',         path: '/admin/reports' },

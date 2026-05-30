@@ -29,15 +29,15 @@ import { map } from 'rxjs/operators';
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private fs = inject(FirestoreService);
 
-  // Firestore streams
+  // Firestore streams — no initialValue → starts as undefined (loading),
+  // then Firestore emits [] (empty) or populated array
   announcements = toSignal(
     this.fs.collection$<Announcement>(
       'announcements',
       this.fs.where('isPinned', '==', false),
       this.fs.orderBy('createdAt', 'desc'),
       this.fs.limit(6)
-    ),
-    { initialValue: [] }
+    )
   );
 
   pinnedAnnouncements = toSignal(
@@ -46,8 +46,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fs.where('isPinned', '==', true),
       this.fs.orderBy('createdAt', 'desc'),
       this.fs.limit(3)
-    ),
-    { initialValue: [] }
+    )
   );
 
   gallery = toSignal(
@@ -156,7 +155,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private startTicker(): void {
     this.tickerTimer = setInterval(() => {
       const items = this.announcements();
-      if (items.length > 0) {
+      if (items && items.length > 0) {
         this.tickerIndex.update((i) => (i + 1) % items.length);
       }
     }, 4000);

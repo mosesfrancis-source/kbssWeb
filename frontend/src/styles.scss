@@ -418,14 +418,84 @@ body {
   }
 }
 
-// Touch-friendly minimum tap targets
+// ─── Touch-friendly minimum tap targets (44×44 px) ───────────────────────────
 .nav-link,
 .sidebar-item,
 button,
 a[mat-button],
 a[mat-raised-button],
-a[mat-stroked-button] {
+a[mat-stroked-button],
+a[mat-icon-button],
+button[mat-icon-button] {
   min-height: 44px;
+}
+
+// Ensure mat-icon-buttons meet the 44px target on mobile
+.mat-mdc-icon-button {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+// Prevent iOS auto-zoom on input focus (font-size must be ≥ 16px)
+input,
+textarea,
+select,
+.mat-mdc-input-element {
+  font-size: 16px !important;
+}
+
+// ─── Back button / breadcrumb navigation ─────────────────────────────────────
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+  min-height: 44px;
+  cursor: pointer;
+  background: none;
+  border: none;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { background: var(--color-primary-50); }
+}
+
+.page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+
+  a, button.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    min-height: 44px;
+    padding: 8px 4px;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  .breadcrumb-sep {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb-current {
+    color: var(--color-text-caption);
+    font-size: 0.875rem;
+  }
 }
 
 // ─── Utility overrides ────────────────────────────────────────────────────────
