@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,7 +10,7 @@ import { FirestoreService } from '../../../core/services/firestore.service';
 import { StorageService } from '../../../core/services/storage.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, of } from 'rxjs';
+import { switchMap, of, firstValueFrom } from 'rxjs';
 import { Student } from '../../../shared/models';
 import { updateProfile } from '@angular/fire/auth';
 import { Auth } from '@angular/fire/auth';
@@ -171,14 +171,18 @@ export class StudentProfileComponent {
     this.uploading.set(true);
 
     this.storage.uploadAndGetURL(this.storage.avatarPath(uid), file).subscribe({
-      next: (url) => {
-        const currentUser = this.firebaseAuth.currentUser;
-        if (currentUser) {
-          updateProfile(currentUser, { photoURL: url }).then(() => {
-            this.auth.refreshToken();
-            this.uploading.set(false);
-            this.toast.success('Profile photo updated!');
-          });
+      next: async (url) => {
+        try {
+          const currentUser = this.firebaseAuth.currentUser;
+          if (currentUser) await updateProfile(currentUser, { photoURL: url });
+          await firstValueFrom(this.fs.update(`users/${uid}`, { photoURL: url }));
+          this.auth.refreshToken();
+          this.selectedFile.set(null);
+          this.uploading.set(false);
+          this.toast.success('Profile photo updated!');
+        } catch {
+          this.uploading.set(false);
+          this.toast.error('Failed to save photo.');
         }
       },
       error: () => { this.uploading.set(false); this.toast.error('Upload failed.'); },
