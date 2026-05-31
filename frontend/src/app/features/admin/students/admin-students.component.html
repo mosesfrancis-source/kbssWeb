@@ -46,8 +46,15 @@
             <mat-select formControlName="classId">
               @for (c of classes(); track c.id) {
                 <mat-option [value]="c.classId">{{ c.name }}</mat-option>
+              } @empty {
+                <mat-option disabled value="">No classes — go to Classes &amp; Subjects to add them first</mat-option>
               }
             </mat-select>
+            @if (classes().length === 0) {
+              <mat-hint class="hint-warn">
+                No classes found. Create them in <strong>Classes &amp; Subjects</strong> first.
+              </mat-hint>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Enrollment Year</mat-label>

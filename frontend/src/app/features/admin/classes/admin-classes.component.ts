@@ -11,6 +11,41 @@ import { FirestoreService } from '../../../core/services/firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SchoolClass, Subject, Teacher } from '../../../shared/models';
+import { forkJoin } from 'rxjs';
+
+const DEFAULT_CLASSES: Omit<SchoolClass, 'id'>[] = [
+  { classId: 'jss-1a',    name: 'JSS 1A',          level: 'JSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','science','social','french','rme','pe'] },
+  { classId: 'jss-1b',    name: 'JSS 1B',          level: 'JSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','science','social','french','rme','pe'] },
+  { classId: 'jss-2a',    name: 'JSS 2A',          level: 'JSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','science','social','french','rme','pe'] },
+  { classId: 'jss-2b',    name: 'JSS 2B',          level: 'JSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','science','social','french','rme','pe'] },
+  { classId: 'jss-3a',    name: 'JSS 3A',          level: 'JSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','science','social','french','rme','pe'] },
+  { classId: 'sss-1-sci', name: 'SSS 1 Science',   level: 'SSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','biology','chemistry','physics','f-math'] },
+  { classId: 'sss-1-arts',name: 'SSS 1 Arts',      level: 'SSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','history','geography','literature','french'] },
+  { classId: 'sss-2-sci', name: 'SSS 2 Science',   level: 'SSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','biology','chemistry','physics','f-math'] },
+  { classId: 'sss-2-com', name: 'SSS 2 Commercial',level: 'SSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','economics','commerce','accounts','typewriting'] },
+  { classId: 'sss-3-sci', name: 'SSS 3 Science',   level: 'SSS', teacherId: '', academicYear: '2024/2025', subjectIds: ['math','english','biology','chemistry','physics','f-math'] },
+];
+
+const DEFAULT_SUBJECTS: Omit<Subject, 'id'>[] = [
+  { subjectId: 'math',       name: 'Mathematics',           code: 'MATH', division: 'Core',       level: 'Both' },
+  { subjectId: 'english',    name: 'English Language',      code: 'ENG',  division: 'Core',       level: 'Both' },
+  { subjectId: 'science',    name: 'Integrated Science',    code: 'ISCI', division: 'Core',       level: 'JSS'  },
+  { subjectId: 'social',     name: 'Social Studies',        code: 'SOCS', division: 'Core',       level: 'JSS'  },
+  { subjectId: 'french',     name: 'French',                code: 'FRE',  division: 'Core',       level: 'Both' },
+  { subjectId: 'rme',        name: 'Religious & Moral Edu', code: 'RME',  division: 'Core',       level: 'JSS'  },
+  { subjectId: 'pe',         name: 'Physical Education',    code: 'PE',   division: 'Core',       level: 'Both' },
+  { subjectId: 'biology',    name: 'Biology',               code: 'BIO',  division: 'Science',    level: 'SSS'  },
+  { subjectId: 'chemistry',  name: 'Chemistry',             code: 'CHEM', division: 'Science',    level: 'SSS'  },
+  { subjectId: 'physics',    name: 'Physics',               code: 'PHY',  division: 'Science',    level: 'SSS'  },
+  { subjectId: 'f-math',     name: 'Further Mathematics',   code: 'FMAT', division: 'Science',    level: 'SSS'  },
+  { subjectId: 'history',    name: 'History',               code: 'HIST', division: 'Arts',       level: 'SSS'  },
+  { subjectId: 'geography',  name: 'Geography',             code: 'GEO',  division: 'Arts',       level: 'SSS'  },
+  { subjectId: 'literature', name: 'Literature in English', code: 'LIT',  division: 'Arts',       level: 'SSS'  },
+  { subjectId: 'economics',  name: 'Economics',             code: 'ECON', division: 'Commercial', level: 'SSS'  },
+  { subjectId: 'commerce',   name: 'Commerce',              code: 'COM',  division: 'Commercial', level: 'SSS'  },
+  { subjectId: 'accounts',   name: 'Accounts',              code: 'ACC',  division: 'Commercial', level: 'SSS'  },
+  { subjectId: 'typewriting', name: 'Typewriting',          code: 'TYPE', division: 'Commercial', level: 'SSS'  },
+];
 
 @Component({
   selector: 'app-admin-classes',
@@ -32,6 +67,11 @@ import { SchoolClass, Subject, Teacher } from '../../../shared/models';
                 <mat-icon>{{ showClassForm() ? 'close' : 'add' }}</mat-icon>
                 {{ showClassForm() ? 'Cancel' : 'New Class' }}
               </button>
+              @if (classes().length === 0) {
+                <button mat-stroked-button color="accent" (click)="seedDefaults()" style="margin-left:12px">
+                  <mat-icon>auto_awesome</mat-icon> Seed Default KBSS Classes &amp; Subjects
+                </button>
+              }
             </div>
 
             @if (showClassForm()) {
@@ -168,4 +208,16 @@ export class AdminClassesComponent {
 
   deleteClass(id: string): void { if (confirm('Delete class?')) this.fs.delete(`classes/${id}`).subscribe(() => this.toast.success('Deleted.')); }
   deleteSubject(id: string): void { if (confirm('Delete subject?')) this.fs.delete(`subjects/${id}`).subscribe(() => this.toast.success('Deleted.')); }
+
+  seedDefaults(): void {
+    if (!confirm('Add the 10 default KBSS classes and 18 subjects to Firestore?')) return;
+    const writes = [
+      ...DEFAULT_CLASSES.map(c  => this.fs.set(`classes/${c.classId}`,    c as object)),
+      ...DEFAULT_SUBJECTS.map(s => this.fs.set(`subjects/${s.subjectId}`, s as object)),
+    ];
+    forkJoin(writes).subscribe({
+      next:  () => this.toast.success('Default classes & subjects added!'),
+      error: () => this.toast.error('Seeding failed — check Firestore rules.'),
+    });
+  }
 }
