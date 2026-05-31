@@ -65,33 +65,15 @@ export class PortalShellComponent implements OnInit {
 
   sidebarOpen = signal(false);
 
-  private readonly PREF_KEY = 'kbss-sidebar';
-
   ngOnInit(): void {
-    const saved = localStorage.getItem(this.PREF_KEY);
-    // On mobile always start closed; on desktop respect saved pref (default open)
-    if (window.innerWidth < 1025) {
-      this.sidebarOpen.set(false);
-    } else {
-      this.sidebarOpen.set(saved !== 'closed');
-    }
+    this.sidebarOpen.set(window.innerWidth >= 1025);
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update((v) => {
-      const next = !v;
-      // Only persist the desktop preference
-      if (window.innerWidth >= 1025) {
-        localStorage.setItem(this.PREF_KEY, next ? 'open' : 'closed');
-      }
-      return next;
-    });
+    this.sidebarOpen.update((v) => !v);
   }
 
   closeSidebar(): void {
     this.sidebarOpen.set(false);
-    if (window.innerWidth >= 1025) {
-      localStorage.setItem(this.PREF_KEY, 'closed');
-    }
   }
 }

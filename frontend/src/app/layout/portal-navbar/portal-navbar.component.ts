@@ -24,12 +24,11 @@ import { map } from 'rxjs/operators';
     MatFormFieldModule, MatInputModule, FormsModule,
   ],
   template: `
-    <header class="portal-navbar">
-      @if (!sidebarOpen) {
-        <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn" aria-label="Open sidebar">
-          <mat-icon>menu</mat-icon>
-        </button>
-      }
+    <header class="portal-navbar" [class.sidebar-open]="sidebarOpen">
+      <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn"
+              [attr.aria-label]="sidebarOpen ? 'Close sidebar' : 'Open sidebar'">
+        <mat-icon>{{ sidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
 
       <!-- Back / Forward / Home -->
       <div class="nav-history">
@@ -143,8 +142,13 @@ import { map } from 'rxjs/operators';
       align-items: center;
       gap: var(--space-4);
       padding: 0 var(--space-6);
-      /* above sidebar so it is never covered */
+      /* always above the sidebar (calc(z-fixed - 1)) */
       z-index: var(--z-fixed);
+      transition: left var(--transition-normal);
+
+      @media (min-width: 1025px) {
+        &.sidebar-open { left: var(--sidebar-width); }
+      }
     }
 
     .menu-btn { color: var(--color-text-body); }
