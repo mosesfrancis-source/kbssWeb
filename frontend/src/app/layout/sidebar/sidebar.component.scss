@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0;
+  bottom: 56px;  /* clear the global bottom-nav bar */
   width: var(--sidebar-width);
   background: var(--color-primary-dark);
   /* navbar is z-fixed (above this), overlay/content is below this */

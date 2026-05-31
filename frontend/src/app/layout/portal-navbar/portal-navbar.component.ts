@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
-import { CommonModule, Location } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -29,19 +29,6 @@ import { map } from 'rxjs/operators';
               [attr.aria-label]="sidebarOpen ? 'Close sidebar' : 'Open sidebar'">
         <mat-icon>{{ sidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
       </button>
-
-      <!-- Back / Forward / Home -->
-      <div class="nav-history">
-        <button mat-icon-button (click)="goBack()" matTooltip="Go back" class="nav-btn" aria-label="Go back">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <button mat-icon-button (click)="goForward()" matTooltip="Go forward" class="nav-btn" aria-label="Go forward">
-          <mat-icon>arrow_forward</mat-icon>
-        </button>
-        <button mat-icon-button (click)="goHome()" matTooltip="Dashboard" class="nav-btn" aria-label="Go to dashboard">
-          <mat-icon>home</mat-icon>
-        </button>
-      </div>
 
       <!-- Search -->
       <div class="search-bar">
@@ -152,14 +139,6 @@ import { map } from 'rxjs/operators';
     }
 
     .menu-btn { color: var(--color-text-body); }
-
-    .nav-history {
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-
-    .nav-btn { color: var(--color-text-body); }
 
     .search-bar {
       flex: 1;
@@ -334,8 +313,6 @@ export class PortalNavbarComponent {
 
   auth = inject(AuthService);
   theme = inject(ThemeService);
-  private location = inject(Location);
-  private router = inject(Router);
   private notifService = inject(NotificationService);
 
   searchQuery = '';
@@ -362,8 +339,4 @@ export class PortalNavbarComponent {
   markRead(id: string): void {
     this.notifService.markAsRead(id).subscribe();
   }
-
-  goBack(): void    { this.location.back(); }
-  goForward(): void { this.location.forward(); }
-  goHome(): void    { this.router.navigate(['/' + (this.auth.role() ?? 'student') + '/dashboard']); }
 }

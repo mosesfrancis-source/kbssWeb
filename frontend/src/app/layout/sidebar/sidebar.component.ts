@@ -57,7 +57,9 @@ const ADMIN_ITEMS: SidebarItem[] = [
   standalone: true,
   imports: [RouterLink, RouterLinkActive, CommonModule, MatIconModule, MatButtonModule, MatTooltipModule],
   template: `
-    <aside class="sidebar" [class.open]="open">
+    <aside class="sidebar"
+           [class.open]="open"
+           [style.transform]="open ? 'translateX(0)' : 'translateX(-100%)'">
       <!-- Brand -->
       <div class="sidebar-brand">
         <img src="assets/images/kbss-badge.svg" alt="K.B.S.S" class="sidebar-badge"
